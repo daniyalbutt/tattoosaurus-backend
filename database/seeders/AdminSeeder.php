@@ -16,12 +16,12 @@ class AdminSeeder extends Seeder
 
         // create (or fetch) the admin user
         $admin = User::firstOrCreate(
-            ['email' => 'admin@tattoosaurus.com'],   // unique key — won't duplicate on re-run
+            ['email' => 'info@admin.com'],   // unique key — won't duplicate on re-run
             [
                 'name'              => 'Super Admin',
                 'username'          => 'admin',
                 'phone'             => '0000000000',
-                'password'          => Hash::make('@Admin!@#'),
+                'password'          => Hash::make('@Admin!23#'),
                 'status'            => 'active',
                 'email_verified_at' => now(),
             ]
