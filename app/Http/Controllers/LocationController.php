@@ -10,9 +10,13 @@ class LocationController extends Controller
 {
     public function countries()
     {
-        return response()->json(
-            Country::orderBy('name')->get(['id', 'name'])
-        );
+        $countries = Country::orderBy('name')->get(['id', 'name']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'countries',
+            'data'    => $countries,
+        ]);
     }
 
     public function states($countryId)
