@@ -5,7 +5,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/register-img.png" alt="">
+                            <img src="{{ asset('img/register-img.png') }}" alt="">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -51,7 +51,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/register-img.png" alt="">
+                            <img src="{{ asset('img/register-img.png') }}" alt="">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -130,7 +130,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/signup-img.png" alt="">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -234,7 +234,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/signup-img.png" alt="">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -278,7 +278,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/signup-img.png" alt="">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -344,7 +344,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/signup-img.png" alt="">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -394,7 +394,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/signup-img.png" alt="">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -427,7 +427,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="register-img">
-                            <img src="img/signup-img.png" alt="">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
                         </div>
                     </div>
                     <div class="col-md-6">

@@ -43,7 +43,13 @@
                         </div>
                         <p>{{ $profile?->bio ?: 'This artist has not added a bio yet.' }}</p>
                         <div class="btn-wrapper">
-                            <a href="#" class="btn btn-gradient">Tattoo Request</a>
+                            @auth
+                                <a href="{{ route('tattoo.request', $user) }}" class="btn btn-gradient">Tattoo Request</a>
+                            @else
+                                <a href="#" class="btn btn-gradient request-gate"
+                                data-intended="{{ route('tattoo.request', $user) }}"
+                                data-bs-toggle="modal" data-bs-target="#loginModal">Tattoo Request</a>
+                            @endauth
                         </div>
                     </div>
                 </div>

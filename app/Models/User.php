@@ -33,4 +33,12 @@ class User extends Authenticatable
     }
 
     public function isPending(): bool { return $this->status === 'pending'; }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->artistProfile?->avatar) {
+            return asset('storage/'.$this->artistProfile->avatar);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&size=80';
+    }
 }

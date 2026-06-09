@@ -3269,3 +3269,7 @@ span.input-group-text.password-toggle {
 section.contact-wrapper .input-group {
     margin-bottom: 20px;
 }
+
+div#imagePreviewContainer {
+    margin-top: 10px;
+}

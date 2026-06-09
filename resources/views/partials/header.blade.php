@@ -29,11 +29,22 @@
                                 </a>
                                 <div class="dropdown">
                                     <a href="#" class="user-button dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="{{ asset('img/user-button.png') }}" alt="">
+                                        @auth
+                                            <img src="{{ auth()->user()->avatar_url }}" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                        @else
+                                            <img src="{{ asset('img/user-button.png') }}" alt="">
+                                        @endauth
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                         @auth
-                                            <li><a class="dropdown-item" href="{{ url('user/account-center') }}">GO TO PORTAL</a></li>
+                                            @php
+                                                $portalUrl = auth()->user()->hasRole('artist')
+                                                    ? route('artist.dashboard')
+                                                    : (auth()->user()->hasRole('admin')
+                                                        ? route('admin.dashboard')
+                                                        : route('customer.dashboard'));
+                                            @endphp
+                                            <li><a class="dropdown-item" href="{{ $portalUrl }}">GO TO PORTAL</a></li>
                                             <li>
                                                 <form method="POST" action="{{ route('logout') }}">
                                                     @csrf

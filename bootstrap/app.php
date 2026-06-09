@@ -23,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('artist')
                 ->name('artist.')
                 ->group(base_path('routes/artist.php'));
+            
+            Route::middleware('web')
+                ->name('customer.')
+                ->group(base_path('routes/customer.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware) {

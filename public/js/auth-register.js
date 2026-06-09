@@ -107,9 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const otp = [...otpForm.querySelectorAll('.otp-digit')].map(i => i.value).join('');
         try {
             const { status, body } = await post(regUrl('/otp'), { otp });
+
             if (status === 200) {
+                // ── CUSTOMER: logged in by the server, redirect to intended page ──
+                if (selectedRole === 'customer') {
+                    const intended = sessionStorage.getItem('intended_url');
+                    sessionStorage.removeItem('intended_url');
+                    window.location.href = intended || body.redirect || '/';
+                    return;
+                }
+
+                // ── ARTIST: continue to the details step ──
                 hide('oneTimePassowrdModal');
                 show('registerationModal');
+
             } else if (status === 422) {
                 renderFieldErrors(otpForm, body.errors ?? {});
                 const slot = otpForm.querySelector('.field-error[data-error="otp"]');
@@ -189,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         clearErrors(loginForm);
         const errBox = document.getElementById('loginError');
-        errBox.classList.add('d-none');
+        errBox?.classList.add('d-none');
 
         const btn = loginForm.querySelector('button[type="submit"]');
         startLoading(btn);
@@ -202,8 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (status === 200 && body.redirect) {
-                // server tells us where to go (artist dashboard, etc.)
-                window.location.href = body.redirect;
+                const intended = sessionStorage.getItem('intended_url');
+                sessionStorage.removeItem('intended_url');
+                window.location.href = intended || body.redirect;
             } else if (status === 422) {
                 renderFieldErrors(loginForm, body.errors ?? {});
                 if (body.message && !body.errors) {
@@ -217,5 +229,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             stopLoading(btn);
         }
+    });
+
+    document.querySelectorAll('.request-gate').forEach(btn => {
+        btn.addEventListener('click', function () {
+            sessionStorage.setItem('intended_url', this.dataset.intended);
+        });
+    });
+
+    // "Create an account" from the login modal → always customer
+    document.querySelectorAll('.goto-register-customer').forEach(link => {
+        link.addEventListener('click', () => {
+            selectedRole = 'customer';
+        });
     });
 });

@@ -7275,7 +7275,7 @@ button#closeNotifications i {
     border-radius: 50px;
     padding: 15px 0px;
     max-width: 250px;
-    margin: 0 auto;
+    margin: 0 auto 20px;
 }
 
 .brief-sent .ms-chat-text {

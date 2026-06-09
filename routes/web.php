@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ArtistRegistrationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\CustomerRegistrationController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -34,4 +37,20 @@ Route::prefix('register/artist')->name('artist.register.')->group(function () {
     Route::post('/otp/resend',[ArtistRegistrationController::class, 'resendOtp'])->name('otp.resend');
     Route::post('/details',   [ArtistRegistrationController::class, 'saveDetails'])->name('details');
     Route::post('/profile',   [ArtistRegistrationController::class, 'saveProfile'])->name('profile');
+});
+
+// web.php
+Route::middleware('auth')->group(function () {
+    Route::get('/tattoo-request/{artist}',  [BookingController::class, 'create'])->name('tattoo.request');
+    Route::post('/tattoo-request/{artist}', [BookingController::class, 'store'])->name('tattoo.request.store');
+
+    Route::get('/chat/{conversation}',       [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{conversation}',      [ChatController::class, 'send'])->name('chat.send');
+    Route::get('/chat/{conversation}/poll',  [ChatController::class, 'poll'])->name('chat.poll');
+});
+
+Route::prefix('register/customer')->name('customer.register.')->group(function () {
+    Route::post('/',            [CustomerRegistrationController::class, 'register'])->name('store');
+    Route::post('/otp',         [CustomerRegistrationController::class, 'verifyOtp'])->name('otp');
+    Route::post('/otp/resend',  [CustomerRegistrationController::class, 'resendOtp'])->name('otp.resend');
 });
