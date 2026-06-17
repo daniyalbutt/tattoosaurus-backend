@@ -17,11 +17,11 @@
                     <div class="footer-heading">
                         <h6>Quick <span class="gold-line">Links</span></h6>
                         <ul>
-                            <li><a href="index.php">Home</a></li>
-                            <li><a href="about-us.php">About Us</a></li>
-                            <li><a href="faqs.php">FAQ</a></li>
-                            <li><a href="contact.php">Contact Us</a></li>
-                            <li><a href="">Blog</a></li>
+                            <li><a href="{{ route('home') }}">Home</a></li>
+                            <li><a href="{{ route('about') }}">About Us</a></li>
+                            <li><a href="{{ route('faqs') }}">FAQ</a></li>
+                            <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                            <li><a href="{{ route('events') }}">Events</a></li>
                         </ul>
                     </div>
                 </div>
@@ -29,8 +29,8 @@
                     <div class="footer-heading">
                         <h6>For <span class="gold-line">Clients</span></h6>
                         <ul>
-                            <li><a href="tattoo-gallery.php">Tattoo Gallery</a></li>
-                            <li><a href="flash-gallery.php">Flash Gallery</a></li>
+                            <li><a href="{{ route('tattoo.gallery') }}">Tattoo Gallery</a></li>
+                            <li><a href="{{ route('flash.gallery') }}">Flash Gallery</a></li>
                         </ul>
                     </div>
                 </div>
