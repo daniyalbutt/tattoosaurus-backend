@@ -17,8 +17,8 @@
                         <h1>Find the Best Tattoo <span class="gold-line">Artists</span> Near You</h1>
                         <p>Looking for a skilled tattoo artist? Tattoosaurus is your one-stop destination to find talented tattoo artists, explore portfolios, and book appointments with ease. Whether you’re looking to get your first tattoo or add to your existing collection, our platform makes it simple and convenient to get inked.</p>
                         <div class="button-wrapper">
-                            <a href="tattoo-artist.php" class="btn btn-white">EXPLORE ARTISTS</a>
-                            <a href="tattoo-gallery.php" class="btn btn-white">TATTOO GALLERY</a>
+                            <a href="{{ route('artist.search') }}" class="btn btn-white">EXPLORE ARTISTS</a>
+                            <a href="{{ route('tattoo.gallery') }}" class="btn btn-white">TATTOO GALLERY</a>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="col-xl-4">
                     <div class="showcase-btn">
-                        <a href="tattoo-gallery.php" class="btn btn-gradient">Top Tattoo Galleries</a>
+                        <a href="{{ route('tattoo.gallery') }}" class="btn btn-gradient">Top Tattoo Galleries</a>
                     </div>
                 </div>
             </div>
@@ -130,7 +130,7 @@
                             </div> -->
                         <p>Welcome to Tattoosaurus, the ultimate platform designed for tattoo artists to showcase their work and grow their business. At Tattoosaurus, we recognize the struggles artists face with overcrowded social media platforms and unreliable booking systems. That’s why we created a dedicated space for tattoo artists to shine.</p>
                         <div class="testimonials-button justify-content-start">
-                            <a href="about-us.php" class="btn btn-gradient">Read More</a>
+                            <a href="{{ route('about') }}" class="btn btn-gradient">Read More</a>
                         </div>
                     </div>
                 </div>
@@ -154,7 +154,7 @@
                 </div>
                 <div class="col-xl-5">
                     <div class="showcase-btn artist-showcase-btn">
-                        <a href="tattoo-gallery.php" class="btn btn-gradient">Artist Gallery</a>
+                        <a href="{{ route('tattoo.gallery') }}" class="btn btn-gradient">Artist Gallery</a>
                     </div>
                 </div>
             </div>
@@ -207,7 +207,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="text-center mt-4">
-                        <a href="tattoo-artist.php" class="btn btn-gradient">VIEW ALL ARTISTS</a>
+                        <a href="{{ route('artist.search') }}" class="btn btn-gradient">VIEW ALL ARTISTS</a>
                     </div>
                 </div>
             </div>
@@ -307,7 +307,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="text-center mt-5 testimonials-button justify-content-center">
-                                        <a href="event.php" class="btn btn-gradient">VIEW ALL EVENTS</a>
+                                        <a href="{{ route('events') }}" class="btn btn-gradient">VIEW ALL EVENTS</a>
                                     </div>
                                 </div>
                             </div>

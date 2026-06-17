@@ -83,7 +83,7 @@
                     <div class="col-lg-6">
                         <div class="payment">
                             <img src="{{ asset('img/payment-img.png') }}" alt="Payment Methods">
-                            <p><a href="">Term & Conditions </a> - <a href="">Privacy Policy</a> - <a href="">Cookie Policy</a></p>
+                            <p><a href="{{ route('term.conditions') }}">Term & Conditions </a> - <a href="{{ route('privacy.policy') }}">Privacy Policy</a> - <a href="{{ route('cookie.policy') }}">Cookie Policy</a></p>
                         </div>
                     </div>
                 </div>

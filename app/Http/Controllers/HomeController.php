@@ -67,4 +67,20 @@ class HomeController extends Controller
     {
         return view('contact');
     }
+
+    public function events(){
+        return view('events');
+    }
+
+    public function termConditions(){
+        return view('term-conditions');
+    }
+
+    public function privacyPolicy(){
+        return view('privacy-policy');
+    }
+
+    public function cookiePolicy(){
+        return view('cookie-policy');
+    }
 }

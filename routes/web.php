@@ -18,11 +18,14 @@ Route::get('/tattoo-artist/{user}', [HomeController::class, 'show'])->name('arti
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/term-conditions', [HomeController::class, 'termConditions'])->name('term.conditions');
+Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
+Route::get('/cookie-policy', [HomeController::class, 'cookiePolicy'])->name('cookie.policy');
 
 Route::get('/tattoo-gallery', [HomeController::class, 'tattooGallery'])->name('tattoo.gallery');
 Route::get('/flash-gallery', [HomeController::class, 'flashGallery'])->name('flash.gallery');
 Route::get('/tattoo-artist', [HomeController::class, 'artistSearch'])->name('artist.search');
-Route::view('/events', 'event')->name('events');
+Route::get('/events', [HomeController::class, 'events'])->name('events');
 
 Route::prefix('locations')->name('locations.')->group(function () {
     Route::get('countries',            [LocationController::class, 'countries'])->name('countries');
