@@ -19,9 +19,9 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
-Route::view('/tattoo-gallery', 'tattoo-gallery')->name('tattoo.gallery');
-Route::view('/flash-gallery', 'flash-gallery')->name('flash.gallery');
-Route::view('/tattoo-artist', 'tattoo-artist')->name('artist.search');
+Route::get('/tattoo-gallery', [HomeController::class, 'tattooGallery'])->name('tattoo.gallery');
+Route::get('/flash-gallery', [HomeController::class, 'flashGallery'])->name('flash.gallery');
+Route::get('/tattoo-artist', [HomeController::class, 'artistSearch'])->name('artist.search');
 Route::view('/events', 'event')->name('events');
 
 Route::prefix('locations')->name('locations.')->group(function () {

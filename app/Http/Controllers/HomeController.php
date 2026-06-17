@@ -41,6 +41,18 @@ class HomeController extends Controller
         ]);
     }
 
+    public function tattooGallery(){
+        return view('tattoo-gallery');
+    }
+
+    public function flashGallery(){
+        return view('flash-gallery');
+    }
+
+    public function artistSearch(){
+        return view('tattoo-artist');
+    }
+
     public function about()
     {
         return view('about');
