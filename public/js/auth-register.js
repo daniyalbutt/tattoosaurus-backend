@@ -171,15 +171,24 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         clearErrors(profileForm);
 
-        const { status, body } = await post(regUrl('/profile'), new FormData(profileForm), true);
+        const btn = profileForm.querySelector('button[type="submit"]');
+        startLoading(btn);
 
-        if (status === 200) {
-            hide('profileModal');
-            show('accountModal');
-        } else if (status === 422) {
-            renderFieldErrors(profileForm, body.errors ?? {});
+        try {
+            const { status, body } = await post(regUrl('/profile'), new FormData(profileForm), true);
+
+            if (status === 200) {
+                hide('profileModal');
+                show('galleryModal');          // ← was accountModal, now gallery
+            } else if (status === 422) {
+                renderFieldErrors(profileForm, body.errors ?? {});
+            }
+        } finally {
+            stopLoading(btn);
         }
     });
+
+
 
     // Show / hide password (delegated)
     document.addEventListener('click', (e) => {
@@ -243,4 +252,232 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedRole = 'customer';
         });
     });
+
+    // ========== ARTIST EXTRA STEPS (6–10) ==========
+
+    function makeSlotUploader(inputId, gridId) {
+        const input = document.getElementById(inputId);
+        const grid  = document.getElementById(gridId);
+        if (!input || !grid) return null;
+
+        let files = [];   // parallel to filled slots, in order
+        const slots = [...grid.querySelectorAll('.upload-slot')];
+
+        input.addEventListener('change', () => {
+            Array.from(input.files).forEach(f => {
+                if (files.length >= slots.length) return;             // grid full
+                if (files.some(x => x.name === f.name && x.size === f.size)) return; // dedupe
+                files.push(f);
+            });
+            sync();
+            render();
+        });
+
+        function sync() {
+            const dt = new DataTransfer();
+            files.forEach(f => dt.items.add(f));
+            input.files = dt.files;
+        }
+
+        function render() {
+            slots.forEach((slot, i) => {
+                // clear
+                slot.classList.remove('filled');
+                slot.querySelector('img')?.remove();
+                slot.querySelector('.slot-remove')?.remove();
+
+                if (files[i]) {
+                    const url = URL.createObjectURL(files[i]);
+                    const img = document.createElement('img');
+                    img.src = url;
+                    slot.appendChild(img);
+
+                    const rm = document.createElement('button');
+                    rm.type = 'button';
+                    rm.className = 'slot-remove';
+                    rm.innerHTML = '&times;';
+                    rm.dataset.i = i;
+                    slot.appendChild(rm);
+
+                    slot.classList.add('filled');
+                }
+            });
+        }
+
+        grid.addEventListener('click', e => {
+            const rm = e.target.closest('.slot-remove');
+            if (!rm) return;
+            e.stopPropagation();
+            files.splice(parseInt(rm.dataset.i), 1);   // remove → others shift left
+            sync();
+            render();
+        });
+
+        return { count: () => files.length };
+    }
+
+    const galleryUp = makeSlotUploader('galleryInput', 'galleryPreviews');
+    const flashUp   = makeSlotUploader('flashInput', 'flashPreviews');
+
+    // ---------- STEP 6: Gallery ----------
+    const galleryForm = document.getElementById('galleryForm');
+    galleryForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearErrors(galleryForm);
+
+        const btn = galleryForm.querySelector('button[type="submit"]');
+        startLoading(btn);
+
+        try {
+            const { status, body } = await post('/register/artist/gallery', new FormData(galleryForm), true);
+            if (status === 200) {
+                hide('galleryModal');
+                show('flashModal');
+            } else if (status === 422) {
+                renderFieldErrors(galleryForm, body.errors ?? {});
+            }
+        } finally {
+            stopLoading(btn);
+        }
+    });
+
+    // ---------- STEP 7: Flash Gallery ----------
+    const flashForm = document.getElementById('flashForm');
+    flashForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearErrors(flashForm);
+
+        const btn = flashForm.querySelector('button[type="submit"]');
+        startLoading(btn);
+
+        try {
+            const { status, body } = await post('/register/artist/flash', new FormData(flashForm), true);
+            if (status === 200) {
+                hide('flashModal');
+                show('availabilityModal');
+            } else if (status === 422) {
+                renderFieldErrors(flashForm, body.errors ?? {});
+            }
+        } finally {
+            stopLoading(btn);
+        }
+    });
+
+    // toggle: show/hide the time ranges for a day
+    document.querySelectorAll('.day-toggle').forEach(t => {
+        t.addEventListener('change', function () {
+            const wrap = this.closest('.avail-row').querySelector('.time-wrap');
+            if (wrap) wrap.style.display = this.checked ? 'block' : 'none';
+        });
+    });
+
+    // delegated: + adds another range, − removes one
+    document.getElementById('availabilityRows')?.addEventListener('click', function (e) {
+        // ADD a range
+        const addBtn = e.target.closest('.range-add');
+        if (addBtn) {
+            const ranges = addBtn.closest('.ranges');
+            const item = document.createElement('div');
+            item.className = 'range-item d-flex align-items-center gap-2 mb-2';
+            item.innerHTML = `
+                <input type="time" class="form-control time-from" value="09:00">
+                <span>To</span>
+                <input type="time" class="form-control time-to" value="21:00">
+                <button type="button" class="range-remove">&minus;</button>
+            `;
+            ranges.appendChild(item);
+            return;
+        }
+        // REMOVE a range
+        const rmBtn = e.target.closest('.range-remove');
+        if (rmBtn) {
+            rmBtn.closest('.range-item').remove();
+        }
+    });
+
+    // STEP 8: submit — collect every range per day
+    const availabilityForm = document.getElementById('availabilityForm');
+    availabilityForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearErrors(availabilityForm);
+
+        const btn = availabilityForm.querySelector('button[type="submit"]');
+        startLoading(btn);
+
+        const availability = [...document.querySelectorAll('.avail-row')].map(row => {
+            const enabled = row.querySelector('.day-toggle').checked;
+            const ranges = enabled
+                ? [...row.querySelectorAll('.range-item')].map(item => ({
+                    from: item.querySelector('.time-from').value,
+                    to:   item.querySelector('.time-to').value,
+                }))
+                : [];
+            return { day: row.dataset.day, enabled, ranges };
+        });
+
+        try {
+            const { status, body } = await post('/register/artist/availability', { availability });
+            if (status === 200) {
+                hide('availabilityModal');
+                show('socialModal');
+            } else if (status === 422) {
+                renderFieldErrors(availabilityForm, body.errors ?? {});
+            }
+        } finally {
+            stopLoading(btn);
+        }
+    });
+
+    // ---------- STEP 9: Social ----------
+    const socialForm = document.getElementById('socialForm');
+    socialForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearErrors(socialForm);
+
+        const btn = socialForm.querySelector('button[type="submit"]');
+        startLoading(btn);
+
+        const f = e.target;
+        try {
+            const { status, body } = await post('/register/artist/social', {
+                facebook:  f.facebook.value,
+                instagram: f.instagram.value,
+                twitter:   f.twitter.value,
+                website:   f.website.value,
+            });
+            if (status === 200) {
+                hide('socialModal');
+                show('pricingModal');
+            } else if (status === 422) {
+                renderFieldErrors(socialForm, body.errors ?? {});
+            }
+        } finally {
+            stopLoading(btn);
+        }
+    });
+
+    // ---------- STEP 10: Pricing → final ----------
+    const pricingForm = document.getElementById('pricingForm');
+    pricingForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearErrors(pricingForm);
+
+        const btn = pricingForm.querySelector('button[type="submit"]');
+        startLoading(btn);
+
+        try {
+            const { status, body } = await post('/register/artist/pricing', {
+                hourly_rate: e.target.hourly_rate.value,
+            });
+            if (status === 200) {
+                hide('pricingModal');
+                show('accountModal');       // STEP 11: Account Created!
+            } else if (status === 422) {
+                renderFieldErrors(pricingForm, body.errors ?? {});
+            }
+        } finally {
+            stopLoading(btn);
+        }
+    });
+    
 });

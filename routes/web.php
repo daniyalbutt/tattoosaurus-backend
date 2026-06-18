@@ -34,12 +34,17 @@ Route::prefix('locations')->name('locations.')->group(function () {
 });
 
 Route::prefix('register/artist')->name('artist.register.')->group(function () {
-    Route::get('/',           [ArtistRegistrationController::class, 'showForm'])->name('form');
-    Route::post('/',          [ArtistRegistrationController::class, 'register'])->name('store');
-    Route::post('/otp',       [ArtistRegistrationController::class, 'verifyOtp'])->name('otp');
-    Route::post('/otp/resend',[ArtistRegistrationController::class, 'resendOtp'])->name('otp.resend');
-    Route::post('/details',   [ArtistRegistrationController::class, 'saveDetails'])->name('details');
-    Route::post('/profile',   [ArtistRegistrationController::class, 'saveProfile'])->name('profile');
+    Route::get('/',             [ArtistRegistrationController::class, 'showForm'])->name('form');
+    Route::post('/',            [ArtistRegistrationController::class, 'register'])->name('store');
+    Route::post('/otp',         [ArtistRegistrationController::class, 'verifyOtp'])->name('otp');
+    Route::post('/otp/resend',  [ArtistRegistrationController::class, 'resendOtp'])->name('otp.resend');
+    Route::post('/details',     [ArtistRegistrationController::class, 'saveDetails'])->name('details');       // step 4: country/state/city
+    Route::post('/profile',     [ArtistRegistrationController::class, 'saveProfile'])->name('profile');       // step 5: image, shop, bio
+    Route::post('/gallery',     [ArtistRegistrationController::class, 'saveGallery'])->name('gallery');       // step 6
+    Route::post('/flash',       [ArtistRegistrationController::class, 'saveFlash'])->name('flash');           // step 7
+    Route::post('/availability',[ArtistRegistrationController::class, 'saveAvailability'])->name('availability'); // step 8
+    Route::post('/social',      [ArtistRegistrationController::class, 'saveSocial'])->name('social');         // step 9
+    Route::post('/pricing',     [ArtistRegistrationController::class, 'savePricing'])->name('pricing');       // step 10
 });
 
 // web.php

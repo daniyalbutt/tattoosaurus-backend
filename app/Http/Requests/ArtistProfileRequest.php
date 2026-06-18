@@ -20,10 +20,19 @@ class ArtistProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'shop_name' => ['required', 'string', 'max:120'],
             'bio'         => ['required', 'string', 'max:2000'],
             'avatar'      => ['nullable', 'image', 'max:4096'],
             'portfolio'   => ['nullable', 'array', 'max:6'],
             'portfolio.*' => ['image', 'max:4096'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'shop_name.required' => 'Please enter your tattoo shop name.',
+        ];
+    }
 }
+

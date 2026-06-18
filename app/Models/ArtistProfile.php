@@ -12,7 +12,7 @@ class ArtistProfile extends Model
     protected $fillable = [
         'user_id','country_id','state_id','city_id','bio','avatar','portfolio_images',
         'social_links','availability','response_time','hourly_rate','faqs','styles',
-        'is_top', 'is_featured',
+        'is_top', 'is_featured', 'shop_name', 'flash_images'
     ];
 
     protected $casts = [
@@ -22,6 +22,11 @@ class ArtistProfile extends Model
         'styles' => 'array',
         'is_top' => 'boolean',
         'is_featured' => 'boolean',
+        'flash_images' => 'array',
+        'portfolio_images' => 'array',
+        'social_links' => 'array',
+        'availability' => 'array', 
+        'styles' => 'array'
     ];
 
     public function user()    { return $this->belongsTo(User::class); }

@@ -2147,9 +2147,9 @@ section.contact-wrapper {
     object-fit: contain;
 }
 
-.contact-form .form-control::placeholder {
-    color: black;
-    letter-spacing: 1px;
+.contact-form .form-control::placeholder, .input-group-wrapper input::placeholder {
+    color: #b5b5b5;
+    font-style: italic;
 }
 
 .contact-form textarea.form-control {
@@ -2244,7 +2244,7 @@ html, body {
 }
 
 
-.register-modal .modal-dialog {
+.register-modal .modal-dialog, #galleryModal .modal-dialog {
     max-width: 1320px;
 }
 
@@ -3302,4 +3302,153 @@ p.terms-updated {
     text-transform: uppercase;
     font-weight: bold;
     margin-top: 40px;
+}
+
+.upload-dropzone {
+    border: 1px dashed #ae9266;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    background: #2b2b2b;
+    color: #fff;
+    margin-bottom: 16px;
+}
+.upload-dropzone i {font-size: 28px;display: block;margin-bottom: 8px;margin: 0 auto 8px;}
+.upload-dropzone p {margin: 0;font-size: 14px;color: white;}
+
+.upload-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.upload-slot {
+    position: relative;
+    aspect-ratio: 1 / 0.8;
+    background: #2b2b2b;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.upload-slot .slot-placeholder { color: #fff; font-size: 26px; opacity: .85; }
+.upload-slot img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;     /* shown when filled */
+}
+.upload-slot.filled .slot-placeholder { display: none; }
+.upload-slot.filled img { display: block; }
+.upload-slot .slot-remove {
+    position: absolute; top: 4px; right: 4px;
+    width: 20px; height: 20px; border: none; border-radius: 50%;
+    background: #d33; color: #fff; font-size: 12px; line-height: 1;
+    cursor: pointer; display: none;
+}
+.upload-slot.filled .slot-remove { display: flex; align-items: center; justify-content: center; }
+
+.gallery-form {
+    margin-right: 24px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.range-add, .range-remove {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border: none; border-radius: 50%;
+    background: #111; color: #fff;
+    font-size: 18px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.range-add:hover, .range-remove:hover {background: #A76F2A;}
+.range-item .form-control {
+    max-width: 200px;
+    border: 1px solid transparent;
+    background-color: white;
+    background-image: linear-gradient(white, white), /* white background */ linear-gradient(180deg, #EEC65F 0%, #A76F2A 50%, #AE9469 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    border-radius: 0;
+    font-size: 15px;
+}
+
+
+span.day-pill {
+    border: 1px solid transparent;
+    background-color: white;
+    background-image: linear-gradient(white, white), /* white background */ linear-gradient(180deg, #EEC65F 0%, #A76F2A 50%, #AE9469 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    align-items: self-start;
+    padding: 8px 21px;
+    min-width: 93px;
+    text-align: center;
+    font-family: "Felix Titling", serif;
+    font-weight: bold;
+    color: black;
+    letter-spacing: 3px;
+}
+
+div#availabilityRows .avail-row:last-child {
+    border: 0;
+}
+
+.avail-row {
+    border-bottom: 1px solid #cdcdcd;
+    padding: 12px 0px;
+}
+
+.form-switch .form-check-input {
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+    background-color: #ccc;
+    border-color: #ccc;
+    box-shadow: none;
+}
+.form-switch .form-check-input:checked {
+    background-color: #111;      /* dark when on, matching your mockup */
+    border-color: #111;
+}
+.form-switch .form-check-input:focus {
+    box-shadow: none;
+    border-color: #ccc;
+}
+
+.range-item {
+    justify-content: space-between;
+}
+
+.time-wrap label {
+    font-size: 16px;
+    margin-bottom: 6px;
+    margin-top: 4px;
+}
+
+form#availabilityForm {
+    overflow-y: scroll;
+    max-height: 500px;
+    padding-right: 30px;
+}
+
+.input-group-wrapper input {
+    border: 1px solid transparent;
+    background-color: white;
+    background-image: linear-gradient(white, white), /* white background */ linear-gradient(180deg, #EEC65F 0%, #A76F2A 50%, #AE9469 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    align-items: self-start;
+    border-radius: 0;
+    font-size: 15px;
+    height: 45px;
+    letter-spacing: 1px;
+    padding: 6px 15px;
+    margin-top: 6px;
+}
+
+.input-group-wrapper label {
+    font-size: 16px;
+    margin-bottom: 0px;
+    margin-top: 4px;
 }

@@ -368,6 +368,15 @@
                                         </div>
                                         <small class="field-error text-danger d-block mb-2 text-center" data-error="avatar"></small>
 
+                                        {{-- Tattoo Shop --}}
+                                        <div class="input-group-wrapper">
+                                            <div class="input-group mb-1">
+                                                <input type="text" name="shop_name" id="shop_name" class="form-control" placeholder="Tattoo Shop" required>
+                                            </div>
+                                            <small class="field-error text-danger d-block mb-2" data-error="shop_name"></small>
+                                        </div>
+
+                                        {{-- Bio --}}
                                         <div class="input-group-wrapper">
                                             <div class="input-group mb-1">
                                                 <textarea name="bio" id="bio" class="form-control" placeholder="Bio"></textarea>
@@ -451,6 +460,233 @@
                                     <div class="col-lg-12">
                                         <button type="button" class="btn btn-gradient" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#oneTimePassowrdModal">Next</button>
                                     </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- STEP 6: Gallery --}}
+<div class="modal fade register-modal" id="galleryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading text-center">
+                                <h2>Show Case Your<br>Gallery</h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <form id="galleryForm" class="gallery-form" enctype="multipart/form-data">
+                                    <div class="upload-dropzone" onclick="document.getElementById('galleryInput').click()">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        <p>Drag &amp; Drop, or Upload image</p>
+                                    </div>
+                                    <input type="file" id="galleryInput" name="images[]" multiple accept="image/*" hidden>
+
+                                    {{-- fixed 9-slot grid --}}
+                                    <div class="upload-grid" id="galleryPreviews">
+                                        @for($i = 0; $i < 6; $i++)
+                                            <div class="upload-slot" data-slot="{{ $i }}">
+                                                <span class="slot-placeholder"><i class="fa-regular fa-image"></i></span>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <div class="field-error" data-error="images"></div>
+                                    <button type="submit" class="btn btn-gradient mt-4">Continue</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- STEP 7: Flash Gallery --}}
+<div class="modal fade register-modal" id="flashModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading text-center">
+                                <h2>Show Case Your<br>Flash Gallery</h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <form id="flashForm" class="gallery-form" enctype="multipart/form-data">
+                                    <div class="upload-dropzone" onclick="document.getElementById('flashInput').click()">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                        <p>Drag &amp; Drop, or Upload image</p>
+                                    </div>
+                                    <input type="file" id="flashInput" name="images[]" multiple accept="image/*" hidden>
+
+                                    {{-- fixed 9-slot grid --}}
+                                    <div class="upload-grid" id="flashPreviews">
+                                        @for($i = 0; $i < 6; $i++)
+                                            <div class="upload-slot" data-slot="{{ $i }}">
+                                                <span class="slot-placeholder"><i class="fa-regular fa-image"></i></span>
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <div class="field-error" data-error="images"></div>
+                                    <button type="submit" class="btn btn-gradient mt-4">Continue</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- STEP 8: Availability --}}
+<div class="modal fade register-modal" id="availabilityModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading text-center">
+                                <h2>Set Your<br>Availability</h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <form id="availabilityForm" class="text-start gallery-form">
+                                    <div id="availabilityRows">
+                                        @foreach(['sun'=>'Sun','mon'=>'Mon','tue'=>'Tue','wed'=>'Wed','thu'=>'Thu','fri'=>'Fri','sat'=>'Sat'] as $key => $label)
+                                            <div class="avail-row" data-day="{{ $key }}">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <span class="day-pill">{{ $label }}</span>
+                                                    <div class="form-check form-switch m-0">
+                                                        <input class="form-check-input day-toggle" type="checkbox" role="switch" id="toggle-{{ $key }}">
+                                                    </div>
+                                                </div>
+
+                                                <div class="time-wrap mt-2" style="display:none;">
+                                                    <label class="small">Time Range</label>
+
+                                                    {{-- container for one-or-more ranges --}}
+                                                    <div class="ranges">
+                                                        <div class="range-item d-flex align-items-center gap-2 mb-2">
+                                                            <input type="time" class="form-control time-from" value="09:00">
+                                                            <span>To</span>
+                                                            <input type="time" class="form-control time-to" value="21:00">
+                                                            <button type="button" class="range-add">+</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <button type="submit" class="btn btn-gradient mt-3">Continue</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- STEP 9: Social Media --}}
+<div class="modal fade register-modal" id="socialModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading text-center">
+                                <h2>Add Social<br>Media</h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <form id="socialForm" class="text-start gallery-form">
+                                    @foreach(['facebook'=>'Facebook','instagram'=>'Instagram','twitter'=>'Twitter','website'=>'Website'] as $name => $label)
+                                        <div class="input-group-wrapper mb-3">
+                                            <label class="small">{{ $label }}</label>
+                                            <div class="input-group mb-1">
+                                                <input type="url" name="{{ $name }}" class="form-control" placeholder="Link">
+                                            </div>
+                                            <small class="field-error text-danger d-block" data-error="{{ $name }}"></small>
+                                        </div>
+                                    @endforeach
+                                    <button type="submit" class="btn btn-gradient mt-2">Continue</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- STEP 10: Pricing --}}
+<div class="modal fade register-modal" id="pricingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/signup-img.png') }}" alt="Register Image">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading text-center">
+                                <h2>Add Pricing</h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <form id="pricingForm" class="text-start gallery-form">
+                                    <div class="input-group-wrapper mb-3">
+                                        <label class="small">Hourly Rate ($)</label>
+                                        <div class="input-group mb-1">
+                                            <input type="number" name="hourly_rate" class="form-control" min="0" step="1" placeholder="e.g. 120">
+                                        </div>
+                                        <small class="field-error text-danger d-block" data-error="hourly_rate"></small>
+                                    </div>
+                                    <button type="submit" class="btn btn-gradient mt-3">Continue</button>
                                 </form>
                             </div>
                         </div>

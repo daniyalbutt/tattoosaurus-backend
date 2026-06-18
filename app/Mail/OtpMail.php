@@ -15,29 +15,20 @@ class OtpMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public string $code) {}
+    
+    public function __construct(public string $code, public ?string $name = null) {}
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Your Tattoosaurus Verification Code',
-        );
+        return new Envelope(subject: 'Your Tattoosaurus Verification Code');
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
-        return new Content(
-            view: 'emails.otp',
-            with: [
-                'code' => $this->code,
-            ],
-        );
+        return new Content(view: 'emails.otp', with: [
+            'code' => $this->code,
+            'name' => $this->name,
+        ]);
     }
 
     /**
