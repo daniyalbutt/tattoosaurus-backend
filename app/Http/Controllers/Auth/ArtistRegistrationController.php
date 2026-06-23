@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewArtistRegistered;
+use App\Mail\ArtistRegistrationReceived;
 
 class ArtistRegistrationController extends Controller
 {
@@ -170,11 +171,16 @@ class ArtistRegistrationController extends Controller
 
         $user->artistProfile()->update(['hourly_rate' => $data['hourly_rate']]);
 
-        // notify admin from config (.env)
+        $artist = $user->fresh('artistProfile');
+
+        // → notify the ADMIN (review required)
         $adminEmail = config('mail.admin_address');
         if ($adminEmail) {
-            Mail::to($adminEmail)->send(new NewArtistRegistered($user->fresh('artistProfile')));
+            Mail::to($adminEmail)->send(new NewArtistRegistered($artist));
         }
+
+        // → confirm to the ARTIST (under review)
+        Mail::to($artist->email)->send(new ArtistRegistrationReceived($artist));
 
         $request->session()->forget('registration_user_id');
         return response()->json(['ok' => true, 'step' => 'done']);

@@ -1,11 +1,11 @@
 @extends('artist.layouts.app')
-@section('title', 'Manage Gallery')
+@section('title', 'Manage Flash Gallery')
 
 @section('content')
 
 <div class="row">
     <div class="col-md-12">
-        <h2 class="title">Manage Gallery</h2>
+        <h2 class="title">Manage Flash Gallery</h2>
     </div>
 </div>
 
@@ -20,55 +20,54 @@
 
                 {{-- ── EXISTING ITEMS ─────────────────────────────────────── --}}
                 @php
-                    $portfolio = $profile->portfolio_images ?? [];
+                    $flash = $profile->flash_images ?? [];
                 @endphp
 
-                @if(!empty($portfolio))
-                    <h2 class="mb-3">Existing Artwork</h2>
-                    <form method="POST" action="{{ route('artist.portfolio.update') }}" id="remove-form">
+                @if(!empty($flash))
+                    <h2 class="mb-3">Existing Flash Designs</h2>
+                    <form method="POST" action="{{ route('artist.flash.update') }}" id="remove-form">
                         @csrf
                         <div class="row" id="existing-grid">
-                            @foreach($portfolio as $idx => $path)
+                            @foreach($flash as $idx => $path)
                             @php
-                                $isFeatured = $profile->featured_source === 'portfolio'
+                                $isFeatured = $profile->featured_source === 'flash'
                                     && (int)$profile->featured_portfolio_index === $idx;
                             @endphp
-                                <div class="col-md-3 col-sm-4 col-6 mb-4 portfolio-card" id="card-{{ $idx }}">
-                                    <div class="card h-100">
-                                        <div class="position-relative">
-                                            <a href="{{ asset('storage/' . $path) }}" data-fancybox="portfolio">
-                                                <img src="{{ asset('storage/' . $path) }}" alt=""
-                                                     class="card-img-top"
-                                                     style="height:180px;object-fit:cover;cursor:zoom-in;">
-                                            </a>
+                            <div class="col-md-3 col-sm-4 col-6 mb-4 portfolio-card" id="card-{{ $idx }}">
+                                <div class="card h-100">
+                                    <div class="position-relative">
+                                        <a href="{{ asset('storage/' . $path) }}" data-fancybox="flash">
+                                            <img src="{{ asset('storage/' . $path) }}" alt=""
+                                                class="card-img-top"
+                                                style="height:180px;object-fit:cover;cursor:zoom-in;">
+                                        </a>
 
-                                            {{-- Featured badge --}}
-                                            @if($isFeatured)
-                                                <span class="badge bg-warning position-absolute" style="top:6px;left:6px;">
-                                                    <i class="fa fa-star"></i> Featured
-                                                </span>
-                                            @endif
+                                        {{-- Featured badge --}}
+                                        @if($isFeatured)
+                                            <span class="badge bg-warning position-absolute" style="top:6px;left:6px;">
+                                                <i class="fa fa-star"></i> Featured
+                                            </span>
+                                        @endif
 
-                                            {{-- Remove button --}}
-                                            <button type="button"
-                                                    class="btn btn-sm btn-danger position-absolute remove-existing"
-                                                    data-index="{{ $idx }}"
-                                                    style="top:6px;right:6px;min-width:auto;padding:2px 7px;margin-top:1px;">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                        <div class="card-body p-2">
-                                            {{-- Feature button --}}
-                                            <button type="button"
-                                                    class="btn btn-sm w-100 feature-btn {{ $isFeatured ? 'btn-warning' : 'btn-outline-warning' }}"
-                                                    data-feature-url="{{ route('artist.portfolio.feature', $idx) }}">
-                                                <i class="fa fa-star"></i>
-                                                {{ $isFeatured ? 'Featured' : 'Set as Featured' }}
-                                            </button>
-                                        </div>
+                                        {{-- Remove button --}}
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger position-absolute remove-existing"
+                                                data-index="{{ $idx }}"
+                                                style="top:6px;right:6px;min-width:auto;padding:2px 7px;margin-top:1px;">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <button type="button"
+                                                class="btn btn-sm w-100 feature-btn {{ $isFeatured ? 'btn-warning' : 'btn-outline-warning' }}"
+                                                data-feature-url="{{ route('artist.flash.feature', $idx) }}">
+                                            <i class="fa fa-star"></i>
+                                            {{ $isFeatured ? 'Featured' : 'Set as Featured' }}
+                                        </button>
                                     </div>
                                 </div>
-                            @endforeach
+                            </div>
+                        @endforeach
                         </div>
 
                         <div id="remove-inputs"></div>
@@ -80,9 +79,9 @@
                     <hr>
                 @endif
 
-                {{-- ── ADD NEW ARTWORK ─────────────────────────────────────── --}}
-                <h2 class="mb-3">Add New Artwork</h2>
-                <form method="POST" action="{{ route('artist.portfolio.update') }}" enctype="multipart/form-data">
+                {{-- ── ADD NEW FLASH ───────────────────────────────────────── --}}
+                <h2 class="mb-3">Add New Flash Design</h2>
+                <form method="POST" action="{{ route('artist.flash.update') }}" enctype="multipart/form-data">
                     @csrf
 
                     <div id="upload-wrapper">
@@ -102,8 +101,7 @@
                                         <div class="col-md-2">
                                             <button type="button"
                                                     class="btn btn-sm btn-danger remove-upload mt-0"
-                                                    disabled
-                                                    style="min-width:auto;">
+                                                    disabled>
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </div>
@@ -144,7 +142,7 @@
                         <small class="text-muted" id="upload-count-hint"></small>
                     </div>
 
-                    <button class="btn btn-black w-auto">Upload Artwork</button>
+                    <button class="btn btn-black w-auto">Upload Flash</button>
                 </form>
 
             </div>
@@ -219,7 +217,7 @@
         newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    // Feature button → standalone PATCH form on body (avoids nested form)
+    // Feature button → standalone PATCH form
     document.querySelectorAll('.feature-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             const form = document.createElement('form');
@@ -269,7 +267,7 @@
         });
     }
 
-    $('[data-fancybox="portfolio"]').fancybox({
+    $('[data-fancybox="flash"]').fancybox({
         buttons: ['zoom', 'slideShow', 'fullScreen', 'download', 'close'],
         loop: true,
         animationEffect: 'zoom',

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Artist\DashboardController;
 use App\Http\Controllers\Artist\ProfileController;
+use App\Http\Controllers\Artist\AvailabilityController;
 
 Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -17,7 +18,16 @@ Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('faqs',  [ProfileController::class, 'faqs'])->name('faqs.edit');
     Route::post('faqs', [ProfileController::class, 'updateFaqs'])->name('faqs.update');
 
+    Route::post('pricing', [ProfileController::class, 'updatePricing'])->name('pricing.update');
+
     Route::get('portfolio',  [ProfileController::class, 'portfolio'])->name('portfolio.edit');
     Route::post('portfolio', [ProfileController::class, 'updatePortfolio'])->name('portfolio.update');
     Route::patch('portfolio/feature/{index}', [ProfileController::class, 'featurePortfolio'])->name('portfolio.feature');
+
+    Route::get('availability',  [AvailabilityController::class, 'edit'])->name('availability.edit');
+    Route::post('availability', [AvailabilityController::class, 'update'])->name('availability.update');
+
+    Route::get('flash',  [ProfileController::class, 'flash'])->name('flash.edit');
+    Route::post('flash', [ProfileController::class, 'updateFlash'])->name('flash.update');
+    Route::patch('flash/feature/{index}', [ProfileController::class, 'featureFlash'])->name('flash.feature');
 });

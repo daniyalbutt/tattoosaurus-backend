@@ -999,6 +999,7 @@ body:not(.ms-aside-left-open) .ms-aside-toggler .ms-toggler-bar{
 }
 .side-nav .menu-item ul {
   padding-left: 30px;
+  margin-top: 8px;
 }
 
 .side-nav .has-chevron:hover::after{
@@ -7133,7 +7134,7 @@ h2.title.border-title {
 }
 
 .side-nav .menu-item ul li a {
-    padding: 8px 10px;
+    padding: 12px 20px;
 }
 
 .side-nav .menu-item ul li a img {

@@ -8,9 +8,22 @@
                     ? asset('storage/' . $profile->avatar)
                     : asset('portal/img/people-5.jpg');
     $portfolio = $profile?->portfolio_images ?? [];
+    $flash     = $profile?->flash_images ?? [];
     $faqs      = $profile?->faqs ?? [];
     $styles    = $profile?->styles ?? [];
     $links     = $profile?->social_links ?? [];
+    $availability = $profile?->availability ?? [];
+
+    // portfolio/flash may be flat paths (from registration) or {image,description} (from portal editor)
+    $normalize = function ($items) {
+        return collect($items)->map(function ($it) {
+            return is_array($it)
+                ? ['image' => $it['image'] ?? null, 'description' => $it['description'] ?? '']
+                : ['image' => $it, 'description' => ''];
+        })->filter(fn ($i) => $i['image'])->all();
+    };
+    $portfolio = $normalize($portfolio);
+    $flash     = $normalize($flash);
 @endphp
 <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
     <div class="flex-grow-1">
@@ -34,23 +47,21 @@
         <div class="card">
             <div class="card-body">
 
-                {{-- Cover + Avatar --}}
                 <div class="dr-profile-bg rounded-top position-relative mx-n3 mt-n3"
                      style="height:100px;background:#1a1a1a;">
-                    <img src="{{ $avatar }}"
-                         alt="{{ $user->name }}"
+                    <img src="{{ $avatar }}" alt="{{ $user->name }}"
                          class="border border-light border-3 rounded-circle position-absolute top-100 start-50 translate-middle"
-                         height="100" width="100"
-                         style="object-fit:cover;">
+                         height="100" width="100" style="object-fit:cover;">
                 </div>
 
-                {{-- Name + username --}}
                 <div class="mt-4 mb-2 pt-3 text-center">
                     <p class="mb-1 fs-18 fw-semibold text-dark">{{ $user->name }}</p>
                     <p class="mb-0 fw-medium text-muted">&#64;{{ $user->username }}</p>
+                    @if($profile?->shop_name)
+                        <p class="mb-0 mt-1 text-muted fs-13"><i class="fa fa-store me-1"></i>{{ $profile->shop_name }}</p>
+                    @endif
                 </div>
 
-                {{-- Completion badge --}}
                 @if($profile)
                     <div class="text-center mb-3">
                         <span class="badge {{ $profile->completion >= 80 ? 'bg-success' : ($profile->completion >= 50 ? 'bg-warning' : 'bg-danger') }}">
@@ -59,7 +70,6 @@
                     </div>
                 @endif
 
-                {{-- Bio --}}
                 @if($profile?->bio)
                     <h5 class="card-title fw-semibold">About :</h5>
                     <p class="mt-2">{{ $profile->bio }}</p>
@@ -75,9 +85,9 @@
                             </p>
                         </div>
                         <div class="col-4">
-                            <h6 class="text-muted mb-1">Availability</h6>
+                            <h6 class="text-muted mb-1">Days Open</h6>
                             <p class="fs-15 text-dark fw-semibold mb-0">
-                                {{ $profile?->availability ?: '—' }}
+                                {{ collect($availability)->where('enabled', true)->count() ?: '—' }}
                             </p>
                         </div>
                         <div class="col-4">
@@ -89,25 +99,21 @@
                     </div>
                 </div>
 
-                {{-- Tattoo Styles --}}
                 @if(!empty($styles))
                     <h5 class="card-title fw-semibold mt-4 mb-2">Tattoo Styles :</h5>
                     @foreach($styles as $style)
-                        <span class="badge bg-light text-dark my-1 px-2 py-1 rounded-pill fw-medium fs-12">
-                            {{ ucfirst($style) }}
-                        </span>
+                        <span class="badge bg-light text-dark my-1 px-2 py-1 rounded-pill fw-medium fs-12">{{ ucfirst($style) }}</span>
                     @endforeach
                 @endif
 
-                {{-- Social Links --}}
+                {{-- Social Links (now includes website) --}}
                 @if(!empty(array_filter($links)))
                     <h5 class="card-title fw-semibold mt-4 mb-2">Social :</h5>
                     <div class="d-flex gap-2 flex-wrap">
-                        @foreach(['facebook' => 'fa-facebook','twitter' => 'fa-twitter','instagram' => 'fa-instagram','linkedin' => 'fa-linkedin'] as $platform => $icon)
+                        @foreach(['facebook' => 'fa-facebook','instagram' => 'fa-instagram','twitter' => 'fa-twitter','website' => 'fa-globe'] as $platform => $icon)
                             @if(!empty($links[$platform]))
-                                <a href="{{ $links[$platform] }}" target="_blank"
-                                   class="btn btn-sm btn-outline-secondary">
-                                    <i class="fab {{ $icon }}"></i> {{ ucfirst($platform) }}
+                                <a href="{{ $links[$platform] }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="{{ $platform === 'website' ? 'fas' : 'fab' }} {{ $icon }}"></i> {{ ucfirst($platform) }}
                                 </a>
                             @endif
                         @endforeach
@@ -116,9 +122,8 @@
 
             </div>
 
-            {{-- Card Footer --}}
+            {{-- Card Footer (unchanged) --}}
             <div class="card-footer border-top">
-                {{-- Top + Featured toggles (active artists only) --}}
                 @if($user->status === 'active')
                     <div class="hstack gap-1 mb-2">
                         <form method="POST" action="{{ route('admin.artists.toggleTop', $user) }}" class="w-100">
@@ -128,7 +133,6 @@
                                 {{ $profile?->is_top ? 'Top Artist ✓' : 'Mark as Top Artist' }}
                             </button>
                         </form>
-
                         <form method="POST" action="{{ route('admin.artists.toggleFeatured', $user) }}" class="w-100">
                             @csrf @method('PATCH')
                             <button class="btn w-100 {{ $profile?->is_featured ? 'btn-info' : 'btn-soft-info' }}">
@@ -139,7 +143,6 @@
                     </div>
                 @endif
 
-                {{-- Approve / Reject (for non-active artists) --}}
                 @if($user->status !== 'active')
                     <div class="hstack gap-1 mb-2">
                         <form method="POST" action="{{ route('admin.artists.approve', $user) }}" class="w-100">
@@ -156,14 +159,9 @@
                     </div>
                 @endif
 
-                {{-- Email / Back --}}
                 <div class="hstack gap-1">
-                    <a href="mailto:{{ $user->email }}" class="btn btn-primary w-100">
-                        <i class="fa fa-envelope me-1"></i> Email
-                    </a>
-                    <a href="{{ route('admin.artists.index') }}" class="btn btn-light w-100">
-                        Back
-                    </a>
+                    <a href="mailto:{{ $user->email }}" class="btn btn-primary w-100"><i class="fa fa-envelope me-1"></i> Email</a>
+                    <a href="{{ route('admin.artists.index') }}" class="btn btn-light w-100">Back</a>
                 </div>
             </div>
         </div>
@@ -175,59 +173,55 @@
                 <div class="table-responsive border border-dashed rounded px-2 py-1">
                     <table class="table table-borderless m-0">
                         <tbody>
-                            <tr>
-                                <td><p class="mb-0">Name :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">{{ $user->name }}</td>
-                            </tr>
-                            <tr>
-                                <td><p class="mb-0">Username :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">&#64;{{ $user->username }}</td>
-                            </tr>
-                            <tr>
-                                <td><p class="mb-0">Email :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">{{ $user->email }}</td>
-                            </tr>
-                            <tr>
-                                <td><p class="mb-0">Phone :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">{{ $user->phone ?: '—' }}</td>
-                            </tr>
+                            <tr><td><p class="mb-0">Name :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $user->name }}</td></tr>
+                            <tr><td><p class="mb-0">Username :</p></td><td class="px-2 text-dark fw-medium fs-14">&#64;{{ $user->username }}</td></tr>
+                            <tr><td><p class="mb-0">Tattoo Shop :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $profile?->shop_name ?: '—' }}</td></tr>
+                            <tr><td><p class="mb-0">Email :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $user->email }}</td></tr>
+                            <tr><td><p class="mb-0">Phone :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $user->phone ?: '—' }}</td></tr>
                             <tr>
                                 <td><p class="mb-0">Status :</p></td>
                                 <td class="px-2 fw-medium fs-14">
-                                    <span class="badge {{ $user->status === 'active' ? 'bg-success' : ($user->status === 'pending' ? 'bg-warning' : 'bg-danger') }}">
-                                        {{ ucfirst($user->status) }}
-                                    </span>
+                                    <span class="badge {{ $user->status === 'active' ? 'bg-success' : ($user->status === 'pending' ? 'bg-warning' : 'bg-danger') }}">{{ ucfirst($user->status) }}</span>
                                 </td>
                             </tr>
-                            <tr>
-                                <td><p class="mb-0">Country :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">
-                                    {{ $profile?->country?->name ?: '—' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><p class="mb-0">State :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">
-                                    {{ $profile?->state?->name ?: '—' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><p class="mb-0">City :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">
-                                    {{ $profile?->city?->name ?: '—' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><p class="mb-0">Joined :</p></td>
-                                <td class="px-2 text-dark fw-medium fs-14">
-                                    {{ $user->created_at->format('M d, Y') }}
-                                </td>
-                            </tr>
+                            <tr><td><p class="mb-0">Country :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $profile?->country?->name ?: '—' }}</td></tr>
+                            <tr><td><p class="mb-0">State :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $profile?->state?->name ?: '—' }}</td></tr>
+                            <tr><td><p class="mb-0">City :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $profile?->city?->name ?: '—' }}</td></tr>
+                            <tr><td><p class="mb-0">Joined :</p></td><td class="px-2 text-dark fw-medium fs-14">{{ $user->created_at->format('M d, Y') }}</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        {{-- Availability Card --}}
+        @if(!empty($availability))
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Availability :</h4>
+                    <div class="table-responsive border border-dashed rounded px-2 py-1">
+                        <table class="table table-borderless m-0">
+                            <tbody>
+                                @foreach($availability as $slot)
+                                    <tr>
+                                        <td style="width:80px;"><p class="mb-0 text-uppercase fw-medium">{{ $slot['day'] ?? '' }}</p></td>
+                                        <td class="px-2 fs-14">
+                                            @if(!empty($slot['enabled']) && !empty($slot['ranges']))
+                                                @foreach($slot['ranges'] as $r)
+                                                    <span class="badge bg-light text-dark me-1">{{ $r['from'] }} – {{ $r['to'] }}</span>
+                                                @endforeach
+                                            @else
+                                                <span class="text-muted">Closed</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @endif
 
     </div>
     {{-- end left col --}}
@@ -235,27 +229,45 @@
     {{-- ── RIGHT COLUMN ─────────────────────────────────────────────────── --}}
     <div class="col-xl-8 col-lg-12">
 
-        {{-- Portfolio --}}
+        {{-- Portfolio / Gallery --}}
         @if(!empty($portfolio))
             <div class="card">
                 <div class="card-header border-bottom border-dashed">
-                    <h4 class="card-title mb-0">Portfolio ({{ count($portfolio) }} works)</h4>
+                    <h4 class="card-title mb-0">Gallery ({{ count($portfolio) }})</h4>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         @foreach($portfolio as $item)
                             <div class="col-xl-3 col-md-4 col-6">
-                                <a href="{{ asset('storage/' . $item['image']) }}"
-                                   data-fancybox="admin-portfolio"
+                                <a href="{{ asset('storage/' . $item['image']) }}" data-fancybox="admin-portfolio"
                                    data-caption="{{ $item['description'] ?: '' }}">
-                                    <img src="{{ asset('storage/' . $item['image']) }}"
-                                         alt="{{ $item['description'] }}"
-                                         class="img-fluid rounded"
-                                         style="height:150px;width:100%;object-fit:cover;cursor:zoom-in;">
+                                    <img src="{{ asset('storage/' . $item['image']) }}" alt=""
+                                         class="img-fluid rounded" style="height:150px;width:100%;object-fit:cover;cursor:zoom-in;">
                                 </a>
                                 @if($item['description'])
                                     <p class="small text-muted mt-1 mb-0">{{ $item['description'] }}</p>
                                 @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Flash Gallery --}}
+        @if(!empty($flash))
+            <div class="card">
+                <div class="card-header border-bottom border-dashed">
+                    <h4 class="card-title mb-0">Flash Gallery ({{ count($flash) }})</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        @foreach($flash as $item)
+                            <div class="col-xl-3 col-md-4 col-6">
+                                <a href="{{ asset('storage/' . $item['image']) }}" data-fancybox="admin-flash">
+                                    <img src="{{ asset('storage/' . $item['image']) }}" alt=""
+                                         class="img-fluid rounded" style="height:150px;width:100%;object-fit:cover;cursor:zoom-in;">
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -275,20 +287,12 @@
                             @if(!empty($faq['q']))
                                 <div class="accordion-item border mb-2 rounded">
                                     <h2 class="accordion-header" id="faq-heading-{{ $i }}">
-                                        <button class="accordion-button {{ $i !== 0 ? 'collapsed' : '' }} fw-medium"
-                                                type="button"
-                                                data-bs-toggle="collapse"
-                                                data-bs-target="#faq-collapse-{{ $i }}"
-                                                aria-expanded="{{ $i === 0 ? 'true' : 'false' }}">
-                                            {{ $faq['q'] }}
-                                        </button>
+                                        <button class="accordion-button {{ $i !== 0 ? 'collapsed' : '' }} fw-medium" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#faq-collapse-{{ $i }}"
+                                                aria-expanded="{{ $i === 0 ? 'true' : 'false' }}">{{ $faq['q'] }}</button>
                                     </h2>
-                                    <div id="faq-collapse-{{ $i }}"
-                                         class="accordion-collapse collapse {{ $i === 0 ? 'show' : '' }}"
-                                         data-bs-parent="#faqAccordion">
-                                        <div class="accordion-body text-muted">
-                                            {{ $faq['a'] ?? '—' }}
-                                        </div>
+                                    <div id="faq-collapse-{{ $i }}" class="accordion-collapse collapse {{ $i === 0 ? 'show' : '' }}" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body text-muted">{{ $faq['a'] ?? '—' }}</div>
                                     </div>
                                 </div>
                             @endif
@@ -298,7 +302,6 @@
             </div>
         @endif
 
-        {{-- Profile incomplete notice --}}
         @if(!$profile)
             <div class="card">
                 <div class="card-body text-center py-5">
@@ -312,12 +315,11 @@
     {{-- end right col --}}
 
 </div>
-
 @endsection
 
 @push('scripts')
 <script>
-$('[data-fancybox="admin-portfolio"]').fancybox({
+$('[data-fancybox="admin-portfolio"], [data-fancybox="admin-flash"]').fancybox({
     buttons: ['zoom', 'slideShow', 'fullScreen', 'download', 'close'],
     loop: true,
     animationEffect: 'zoom',

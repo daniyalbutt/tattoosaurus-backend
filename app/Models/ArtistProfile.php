@@ -12,7 +12,7 @@ class ArtistProfile extends Model
     protected $fillable = [
         'user_id','country_id','state_id','city_id','bio','avatar','portfolio_images',
         'social_links','availability','response_time','hourly_rate','faqs','styles',
-        'is_top', 'is_featured', 'shop_name', 'flash_images'
+        'is_top', 'is_featured', 'shop_name', 'flash_images', 'featured_source', 'featured_portfolio_index'
     ];
 
     protected $casts = [
@@ -23,7 +23,6 @@ class ArtistProfile extends Model
         'is_top' => 'boolean',
         'is_featured' => 'boolean',
         'flash_images' => 'array',
-        'portfolio_images' => 'array',
         'social_links' => 'array',
         'availability' => 'array', 
         'styles' => 'array'
@@ -56,14 +55,24 @@ class ArtistProfile extends Model
 
     public function getFeaturedImageAttribute(): ?string
     {
-        $images = $this->portfolio_images ?? [];
+        $source = $this->featured_source;
+        $index  = $this->featured_portfolio_index;
 
-        foreach ($images as $item) {
-            if (! empty($item['featured'])) {
-                return $item['image'];
-            }
+        // pick the right gallery based on source
+        if ($source === 'flash') {
+            $images = $this->flash_images ?? [];
+        } elseif ($source === 'portfolio') {
+            $images = $this->portfolio_images ?? [];
+        } else {
+            $images = [];
         }
 
-        return $images[0]['image'] ?? null;  // fallback to first image
+        // return the featured image if the index exists
+        if ($index !== null && isset($images[$index])) {
+            return $images[$index];
+        }
+
+        // fallback: first portfolio image, then avatar
+        return ($this->portfolio_images[0] ?? null) ?: $this->avatar;
     }
 }

@@ -35,6 +35,7 @@ class ProfileController extends Controller
     {
         $data = $request->validate([
             'bio'           => ['nullable', 'string', 'max:2000'],
+            'shop_name'     => ['nullable', 'string', 'max:120'],   // ← add
             'avatar'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'country_id'    => ['nullable', 'integer', 'exists:countries,id'],
             'state_id'      => ['nullable', 'integer', 'exists:states,id'],
@@ -51,16 +52,13 @@ class ProfileController extends Controller
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
             $old = auth()->user()->artistProfile->avatar;
             if ($old && \Storage::disk('public')->exists($old)) {
                 \Storage::disk('public')->delete($old);
             }
-
             $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // Clear state/city if parent changed
         if (!$request->filled('country_id')) {
             $data['state_id'] = null;
             $data['city_id']  = null;
@@ -140,59 +138,107 @@ class ProfileController extends Controller
     public function updatePortfolio(Request $request)
     {
         $request->validate([
-            'items'                => ['nullable', 'array', 'max:50'],
-            'items.*.description'  => ['nullable', 'string', 'max:150'],
-            'items.*.image'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
-            'remove'               => ['nullable', 'array'],
-            'remove.*'             => ['integer'],
+            'images'   => ['nullable', 'array'],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
+            'remove'   => ['nullable', 'array'],
         ]);
 
         $profile  = auth()->user()->artistProfile;
         $existing = $profile->portfolio_images ?? [];
 
-        // Remove deleted items (by index, descending to preserve order)
-        $toRemove = $request->input('remove', []);
-        rsort($toRemove);
-        foreach ($toRemove as $idx) {
-            if (isset($existing[$idx])) {
-                \Storage::disk('public')->delete($existing[$idx]['image']);
-                array_splice($existing, $idx, 1);
+        // remove selected (by index)
+        if ($request->filled('remove')) {
+            foreach ($request->remove as $i) {
+                unset($existing[(int) $i]);
+            }
+            $existing = array_values($existing); // reindex
+        }
+
+        // add new uploads (flat paths)
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $existing[] = $img->store('artists/portfolio', 'public');
             }
         }
 
-        // Append new uploads
-        foreach ($request->file('items', []) as $i => $files) {
-            if (!empty($files['image'])) {
-                $path = $files['image']->store('portfolio', 'public');
-                $existing[] = [
-                    'image'       => $path,
-                    'description' => trim($request->input("items.$i.description") ?? ''),
-                ];
-            }
-        }
-
-        $profile->update(['portfolio_images' => array_values($existing)]);
-
+        $profile->update(['portfolio_images' => $existing]);
         return back()->with('success', 'Portfolio updated.');
     }
 
     public function featurePortfolio($index)
     {
         $profile = auth()->user()->artistProfile;
-        $images  = $profile->portfolio_images ?? [];
+        abort_if($index < 0 || $index >= count($profile->portfolio_images ?? []), 404);
 
-        if (! isset($images[$index])) {
-            return back()->with('error', 'Image not found.');
-        }
-
-        // exactly one featured: set on chosen index, clear the rest
-        foreach ($images as $i => &$item) {
-            $item['featured'] = ((string) $i === (string) $index);
-        }
-        unset($item);
-
-        $profile->update(['portfolio_images' => $images]);
-
+        $profile->update([
+            'featured_source'          => 'portfolio',
+            'featured_portfolio_index' => (int) $index,
+        ]);
         return back()->with('success', 'Featured image updated.');
     }
+
+    public function featureFlash($index)
+    {
+        $profile = auth()->user()->artistProfile;
+        abort_if($index < 0 || $index >= count($profile->flash_images ?? []), 404);
+
+        $profile->update([
+            'featured_source'          => 'flash',
+            'featured_portfolio_index' => (int) $index,   // same column as gallery
+        ]);
+        return back()->with('success', 'Featured image updated.');
+    }
+
+    public function editPricing()   // or wherever this page loads from
+    {
+        $profile = auth()->user()->artistProfile;
+        return view('artist.pricing-faqs', compact('profile'));
+    }
+
+    public function updatePricing(Request $request)
+    {
+        $data = $request->validate([
+            'hourly_rate' => ['required', 'numeric', 'min:0', 'max:100000'],
+        ]);
+        auth()->user()->artistProfile()->update(['hourly_rate' => $data['hourly_rate']]);
+        return back()->with('success', 'Pricing updated.');
+    }
+
+    public function flash()
+    {
+        $profile = auth()->user()->artistProfile;
+        return view('artist.flash', compact('profile'));
+    }
+
+    public function updateFlash(Request $request)
+    {
+        $request->validate([
+            'images'   => ['nullable', 'array'],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
+            'remove'   => ['nullable', 'array'],
+        ]);
+
+        $profile  = auth()->user()->artistProfile;
+        $existing = $profile->flash_images ?? [];
+
+        if ($request->filled('remove')) {
+            foreach ($request->remove as $i) {
+                unset($existing[(int) $i]);
+            }
+            $existing = array_values($existing);
+            $profile->featured_flash_index = null; // reset since indexes shifted
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $img) {
+                $existing[] = $img->store('artists/flash', 'public');
+            }
+        }
+
+        $profile->flash_images = $existing;
+        $profile->save();
+
+        return back()->with('success', 'Flash gallery updated.');
+    }
+
 }

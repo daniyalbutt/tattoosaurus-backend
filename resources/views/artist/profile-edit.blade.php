@@ -55,6 +55,17 @@
                         @enderror
                     </div>
 
+                    {{-- TATTOO SHOP ──────────────────────────────────────────── --}}
+                    <div class="form-group">
+                        <label>Tattoo Shop</label>
+                        <input type="text" name="shop_name" class="form-control"
+                            value="{{ old('shop_name', $profile->shop_name) }}"
+                            placeholder="Your studio or shop name">
+                        @error('shop_name')
+                            <span class="text-danger small">{{ $message }}</span>
+                        @enderror
+                    </div>
+
                     {{-- ── LOCATION ─────────────────────────────────────────────── --}}
                     <div class="form-group">
                         <label>Country</label>
@@ -104,25 +115,11 @@
                         @enderror
                     </div>
 
-                    {{-- ── AVAILABILITY ─────────────────────────────────────────── --}}
-                    <div class="form-group">
-                        <label>Availability</label>
-                        <input type="text" name="availability" class="form-control"
-                               value="{{ old('availability', $profile->availability) }}"
-                               placeholder="Mon-Fri 9am-5pm">
-                    </div>
-
                     <div class="form-group">
                         <label>Responds Within</label>
                         <input type="text" name="response_time" class="form-control"
                                value="{{ old('response_time', $profile->response_time) }}"
                                placeholder="Responds within 2 days">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Hourly Rate ($)</label>
-                        <input type="number" step="0.01" name="hourly_rate" class="form-control"
-                               value="{{ old('hourly_rate', $profile->hourly_rate) }}">
                     </div>
 
                     {{-- ── SOCIAL LINKS ──────────────────────────────────────────── --}}

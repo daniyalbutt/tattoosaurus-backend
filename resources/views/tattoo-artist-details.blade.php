@@ -5,10 +5,11 @@
 @section('content')
 
 @php
-    $avatar = $profile?->avatar
+    $avatar    = $profile?->avatar
         ? asset('storage/'.$profile->avatar)
         : asset('img/artist-detail-img.png');
     $portfolio = $profile?->portfolio_images ?? [];
+    $flash     = $profile?->flash_images ?? [];
     $faqs      = $profile?->faqs ?? [];
     $styles    = $profile?->styles ?? [];
     $links     = $profile?->social_links ?? [];
@@ -71,7 +72,49 @@
                         @endif
                     </ul>
                     <ul class="artist-list">
-                        <li><p><i class="fa-solid fa-calendar"></i> {{ $profile?->availability ?: 'Availability not set' }}</p></li>
+                        <li class="calendar-list">
+                            <div>
+                                <i class="fa-solid fa-calendar"></i>
+                                <div class="calender-wrapper">
+                                @php
+                                    $avail = $profile?->availability;
+                                    if (is_string($avail)) {
+                                        $avail = json_decode($avail, true);
+                                    }
+
+                                    // Reorder starting from Monday
+                                    $dayOrder = ['mon','tue','wed','thu','fri','sat','sun'];
+                                    $availKeyed = collect($avail ?? [])->keyBy('day');
+
+                                    $availLines = collect($dayOrder)
+                                        ->map(fn($d) => $availKeyed->get($d))
+                                        ->filter(fn($d) => $d && ($d['enabled'] ?? false))
+                                        ->map(function($d) {
+                                            $dayLabel = ucfirst($d['day']);
+                                            $ranges = collect($d['ranges'] ?? [])
+                                                ->filter(fn($r) => !empty($r['from']) && !empty($r['to']))
+                                                ->map(fn($r) =>
+                                                    \Carbon\Carbon::createFromFormat('H:i', $r['from'])->format('g:i A') .
+                                                    ' - ' .
+                                                    \Carbon\Carbon::createFromFormat('H:i', $r['to'])->format('g:i A')
+                                                )->implode(', ');
+                                            return ['day' => $dayLabel, 'ranges' => $ranges];
+                                        });
+                                @endphp
+
+                                @if($availLines->isNotEmpty())
+                                    @foreach($availLines as $entry)
+                                        <div class="inner-days">
+                                            <span class="day">{{ $entry['day'] }}: </span>
+                                            <span class="day-timing">{!! str_replace(', ', '<br>', e($entry['ranges'])) !!}</span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    Availability not set
+                                @endif
+                                </div>    
+                            </div>
+                        </li>
                         <li><p><i class="fa-solid fa-paper-plane"></i> {{ $profile?->response_time ?: 'Response time not set' }}</p></li>
                         <li><p><i class="fa-solid fa-comment"></i> Chat With Me</p></li>
                         @if($profile?->hourly_rate)
@@ -88,6 +131,7 @@
     </div>
 </section>
 
+{{-- Portfolio Gallery --}}
 <section class="gallery pt-5">
     <div class="container">
         <div class="row justify-content-center">
@@ -100,12 +144,12 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="masonry-grid">
-                    {{-- sizer defines column width: 3 columns = 33.333% --}}
                     <div class="masonry-sizer"></div>
 
                     @forelse($portfolio as $item)
+                        @php $imgPath = is_array($item) ? ($item['image'] ?? $item) : $item; @endphp
                         <div class="masonry-item">
-                            <img src="{{ asset('storage/'.$item['image']) }}" alt="{{ $item['description'] ?? '' }}">
+                            <img src="{{ asset('storage/'.$imgPath) }}" alt="{{ is_array($item) ? ($item['description'] ?? '') : '' }}">
                             <div class="artist-name">
                                 <img src="{{ $avatar }}" alt="">
                                 <h1>{{ $user->name }} <span>{{ $location }}</span></h1>
@@ -124,6 +168,50 @@
                         </div>
                     @empty
                         <p class="text-center w-100 text-white">No gallery images yet.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- Flash Gallery --}}
+<section class="gallery gallery-flash pt-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-12">
+                <div class="section-heading section-white">
+                    <h4>Flash Gallery</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="masonry-grid masonry-grid-flash">
+                    <div class="masonry-sizer"></div>
+
+                    @forelse($flash as $item)
+                        @php $imgPath = is_array($item) ? ($item['image'] ?? $item) : $item; @endphp
+                        <div class="masonry-item">
+                            <img src="{{ asset('storage/'.$imgPath) }}" alt="">
+                            <div class="artist-name">
+                                <img src="{{ $avatar }}" alt="">
+                                <h1>{{ $user->name }} <span>{{ $location }}</span></h1>
+                            </div>
+                            <div class="artist-bottom">
+                                <ul>
+                                    <li><a href="#"><i class="fa-solid fa-heart"></i></a></li>
+                                    <li><a href="#"><i class="fa-solid fa-comment-dots"></i></a></li>
+                                    <li><a href="#"><i class="fa-solid fa-share-nodes"></i></a></li>
+                                    <li><a href="#"><i class="fa-solid fa-flag"></i></a></li>
+                                </ul>
+                                <ul>
+                                    <li><a href="#"><i class="fa-solid fa-bookmark"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-center w-100 text-white">No flash images yet.</p>
                     @endforelse
                 </div>
             </div>

@@ -71,14 +71,34 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a href="{{ route('artist.faqs.edit') }}">
-                    <span><img src="{{ asset('portal/img/box.png') }}" alt="">FAQs</span>
+                <a href="{{ route('artist.availability.edit') }}" class="{{ request()->routeIs('artist.availability.*') ? 'active' : '' }}">
+                    <span><img src="{{ asset('portal/img/box.png') }}" alt="">Availability</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="{{ route('artist.portfolio.edit') }}">
+                <a href="{{ route('artist.faqs.edit') }}">
+                    <span><img src="{{ asset('portal/img/box.png') }}" alt="">Pricing & FAQs</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#" class="has-chevron" data-toggle="collapse" data-target="#portfolio-menu"
+                aria-expanded="false" aria-controls="portfolio-menu">
                     <span><img src="{{ asset('portal/img/box.png') }}" alt="">Portfolio</span>
                 </a>
+                <ul id="portfolio-menu"
+                    class="collapse {{ request()->routeIs('artist.portfolio.*') || request()->routeIs('artist.flash.*') ? 'show' : '' }}"
+                    data-parent="#side-nav-accordion">
+                    <li>
+                        <a href="{{ route('artist.portfolio.edit') }}">
+                            <img src="{{ asset('portal/img/box.png') }}" alt=""> Gallery
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('artist.flash.edit') }}">
+                            <img src="{{ asset('portal/img/box.png') }}" alt=""> Flash Gallery
+                        </a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </aside>

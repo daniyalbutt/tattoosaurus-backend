@@ -383,6 +383,7 @@
                                             </div>
                                             <small class="field-error text-danger d-block mb-2" data-error="bio"></small>
                                         </div>
+                                        
                                     </div>
                                     <div class="col-lg-12">
                                         <button type="submit" class="btn btn-gradient" id="profileSubmit">Continue</button>

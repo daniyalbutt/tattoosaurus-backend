@@ -1640,11 +1640,13 @@ ul.artist-list p {
     color: #FFFFFF;
     font-family: "ITC Avant Garde Gothic";
     font-size: 16px;
+    display: flex;
 }
 
 ul.artist-list p i {
     margin-right: 6px;
     color: #A76F2A;
+    margin-top: 4px;
 }
 
 ul.artist-list {
@@ -3451,4 +3453,32 @@ form#availabilityForm {
     font-size: 16px;
     margin-bottom: 0px;
     margin-top: 4px;
+}
+
+li.calendar-list > div {
+    display: flex;
+    gap: 4px;
+}
+
+li.calendar-list i {
+    color: #A76F2A;
+    margin-top: 4px;
+}
+
+.inner-days {
+    display: flex;
+    gap: 10px;
+    color: #FFFFFF;
+    font-family: "ITC Avant Garde Gothic";
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+span.day {
+    display: inline-block;
+    min-width: 40px;
+}
+
+li.calendar-list {
+    margin-bottom: 1rem;
 }
