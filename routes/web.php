@@ -10,7 +10,6 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ChatController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('test', [HomeController::class, 'test'])->name('test');
 
 // Stubs — point these at real controllers as you build each page
 Route::post('/login',  [LoginController::class, 'login'])->name('login');
