@@ -115,4 +115,11 @@ class HomeController extends Controller
     public function cookiePolicy(){
         return view('cookie-policy');
     }
+
+    public function test(){
+        \App\Models\ArtistProfile::whereNull('slug')->get()->each(function ($p) {
+            $p->slug = \App\Models\ArtistProfile::generateUniqueSlug($p->shop_name ?: $p->user->name, $p->id);
+            $p->save();
+        });
+    }
 }
