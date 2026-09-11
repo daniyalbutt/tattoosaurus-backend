@@ -38,6 +38,87 @@
     <script src="https://npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
     <script src="{{ asset('js/auth-register.js') }}"></script>
     <script src="{{ asset('js/script.js') }}"></script>
+    <script>
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.favourite-btn');
+            if (!btn) return;
+            e.preventDefault();
+
+            const artistId = btn.dataset.artistId;
+
+            fetch(`/artists/${artistId}/favourite`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.classList.toggle('active', data.favourited);
+            })
+            .catch(() => console.error('Failed to toggle favourite'));
+        });
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.board-btn');
+            if (!btn) return;
+            e.preventDefault();
+
+            fetch("{{ route('customer.board.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    artist_id: btn.dataset.artistId,
+                    image: btn.dataset.image
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.classList.toggle('active', data.saved);
+
+                const wrapper = btn.closest('.artist-bottom');
+                if (wrapper) wrapper.classList.toggle('active', data.saved);
+            })
+            .catch(() => console.error('Failed to toggle board item'));
+        });
+
+        // guest: remember which image they tried to save
+        document.addEventListener('click', function (e) {
+            const guestBtn = e.target.closest('.board-guest-btn');
+            if (!guestBtn) return;
+            sessionStorage.setItem('pendingBoardItem', JSON.stringify({
+                artistId: guestBtn.dataset.artistId,
+                image: guestBtn.dataset.image
+            }));
+        });
+
+        // call this after login/register succeeds
+        function applyPendingBoardItem() {
+            const raw = sessionStorage.getItem('pendingBoardItem');
+            if (!raw) return;
+            const { artistId, image } = JSON.parse(raw);
+
+            fetch("{{ route('customer.board.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ artist_id: artistId, image: image })
+            })
+            .then(res => res.json())
+            .then(() => {
+                sessionStorage.removeItem('pendingBoardItem');
+                window.location.reload();
+            })
+            .catch(() => console.error('Failed to apply pending board item'));
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>

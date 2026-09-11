@@ -52,7 +52,24 @@
                     </div>
                     <div class="artist-bottom">
                         <ul>
-                            <li><a href="#"><i class="fa-solid fa-heart"></i></a></li>
+                            @auth
+                                @if(auth()->user()->hasRole('customer'))
+                                    <li>
+                                        <a href="#"
+                                        class="favourite-btn {{ in_array($artist->id, $favouriteIds ?? []) ? 'active' : '' }}"
+                                        data-artist-id="{{ $artist->id }}">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </a>
+                                    </li>
+                                @endif
+                            @else
+                                <li>
+                                    <a href="#" class="favourite-guest-btn" data-artist-id="{{ $artist->id }}"
+                                    data-bs-toggle="modal" data-bs-target="#loginModal">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </a>
+                                </li>
+                            @endauth
                             <li><a href="#"><i class="fa-solid fa-comment-dots"></i></a></li>
                             <li><a href="#"><i class="fa-solid fa-share-nodes"></i></a></li>
                             <li><a href="#"><i class="fa-solid fa-flag"></i></a></li>

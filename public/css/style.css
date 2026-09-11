@@ -3510,3 +3510,24 @@ li.calendar-list {
     width: 60%;
     margin-left: auto;
 }
+
+a.favourite-btn.active:before {
+    left: 0;
+}
+
+a.favourite-btn.active {
+    color: white;
+}
+
+
+.artist-bottom.active {
+    bottom: 20px;
+}
+
+a.board-btn.active:before {
+    left: 0;
+}
+
+a.board-btn.active{
+    color: white;
+}

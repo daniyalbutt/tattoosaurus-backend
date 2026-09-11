@@ -41,4 +41,21 @@ class User extends Authenticatable
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&size=80';
     }
+
+    public function favouriteArtists()
+    {
+        return $this->belongsToMany(User::class, 'favourites', 'customer_id', 'artist_id')
+            ->withTimestamps();
+    }
+
+    public function favouritedByCustomers()
+    {
+        return $this->belongsToMany(User::class, 'favourites', 'artist_id', 'customer_id')
+            ->withTimestamps();
+    }
+
+    public function boardItems()
+    {
+        return $this->hasMany(BoardItem::class, 'customer_id');
+    }
 }

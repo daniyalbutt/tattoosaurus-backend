@@ -11,11 +11,15 @@ class RequestController extends Controller
     public function index()
     {
         $conversations = Conversation::where('artist_id', auth()->id())
-            ->with(['customer', 'request', 'messages' => fn ($q) => $q->latest()->limit(1)])
+            ->with(['customer', 'request',
+                    'messages' => fn ($q) => $q->oldest()])
             ->latest()
             ->get();
 
-        $active = $conversations->first();
+        $active = $conversations->first()?->load([
+            'customer', 'request',
+            'messages' => fn ($q) => $q->oldest()->with('sender'),
+        ]);
 
         return view('artist.requests', compact('conversations', 'active'));
     }
@@ -25,11 +29,16 @@ class RequestController extends Controller
         abort_unless($conversation->artist_id === auth()->id(), 403);
 
         $conversations = Conversation::where('artist_id', auth()->id())
-            ->with(['customer', 'request', 'messages' => fn ($q) => $q->latest()->limit(1)])
+            ->with(['customer', 'request',
+                    'messages' => fn ($q) => $q->oldest()])
             ->latest()
             ->get();
 
-        $active = $conversation->load(['customer', 'request', 'messages.sender']);
+        $active = $conversation->load([
+            'customer',
+            'request',
+            'messages' => fn ($q) => $q->oldest()->with('sender'),
+        ]);
 
         return view('artist.requests', compact('conversations', 'active'));
     }

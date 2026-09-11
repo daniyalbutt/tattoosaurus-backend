@@ -73,4 +73,38 @@
     </div>
 </div>
 
+{{-- Favourite Artists --}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="ms-panel">
+            <div class="ms-panel-header d-flex align-items-center justify-content-between">
+                <h6>Favourite Artists</h6>
+                @if($favourites->isNotEmpty())
+                    <a href="{{ route('customer.favourites') }}" class="small">See All</a>
+                @endif
+            </div>
+            <div class="ms-panel-body">
+                @forelse($favourites as $artist)
+                    @php $profile = $artist->artistProfile; @endphp
+                    <a href="{{ route('artist.public.show', $profile) }}"
+                       class="d-flex align-items-center justify-content-between border-bottom py-2 text-dark text-decoration-none">
+                        <div class="d-flex align-items-center" style="gap:12px;">
+                            <img src="{{ $profile?->display_avatar ?: asset('portal/img/people-5.jpg') }}"
+                                 style="width:42px;height:42px;border-radius:50%;object-fit:cover;" alt="{{ $artist->name }}">
+                            <div>
+                                <strong>{{ $artist->name }}</strong><br>
+                                <small class="text-muted">{{ $profile?->shop_name ?: 'Tattoo artist' }}</small>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-heart" style="color:#e63946;"></i>
+                    </a>
+                @empty
+                    <p class="text-muted mb-0">You haven't favourited any artists yet.
+                        <a href="{{ route('home') }}">Browse artists</a> to get started.</p>
+                @endforelse
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection

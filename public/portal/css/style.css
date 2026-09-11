@@ -2908,6 +2908,7 @@ input:checked + .ms-switch-slider.ms-switch-dark{
 .ms-chat-textbox .btn-link{
   color: #3377e8;
   margin: 0;
+  min-width: 40px;
 }
 .btn.btn-square,
 .ms-btn-icon.btn-square,
@@ -5393,6 +5394,7 @@ li .ms-count{
 }
 .ms-chat-text-controls{
   border-left: 1px solid rgba(0,0,0,.1);
+  padding-left: 10px;
 }
 .ms-chat-text-controls span{
   padding-left: 1rem;
@@ -6907,15 +6909,17 @@ h2.title {
     font-weight: bold;
     font-size: 25px;
     color: #2C2B2B;
-    margin: 0;
+    margin-top: 40px;
+    margin-bottom: 0;
 }
 
 .booking-information {
     margin-bottom: 40px;
-    margin-top: 40px;
+    margin-top: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 25px;
 }
 
 .booking-box {
@@ -7079,6 +7083,8 @@ a.back-to-details {
 
 .board-gallery-img {
     margin-bottom: 30px;
+    position: relative;
+    display: block;
 }
 
 h2.title.border-title {
@@ -7113,7 +7119,8 @@ h2.title.border-title {
 
 .favourite-artists-box h4 {
     color: #2C2B2B;
-    font-size: 22px;
+    font-size: 20px;
+    margin: 0;
 }
 
 .favourite-artists-box p {
@@ -7338,4 +7345,84 @@ li.dropdown-menu-footer button.media {
     text-align: left;
     margin-top: 0;
     border-radius: 0;
+}
+
+.ms-chat-conversations .ms-panel-body.ms-scrollable#chatBody {
+    height: 500px;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.ms-chat-textbox .material-icons {
+    font-size: 20px;
+}
+
+.custom-tattoo-design .user-img img {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50px;
+}
+
+img#rd-artist-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50px;
+}
+
+div#rd-images {
+    margin: 0;
+}
+
+.booking-box.rd-images {
+    background-color: white;
+    padding: 0;
+    margin-bottom: 22px;
+}
+
+.favourite-user-img {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.favourite-user-img img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50px;
+    margin: 0;
+}
+
+.board-artist-name {
+    display: inline-flex;
+    gap: 9px;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.4s ease;
+    background-color: #ffffff;
+    padding: 8px 15px 8px 15px;
+    left: 10px;
+    top: 10px;
+}
+
+.board-artist-name img {
+    width: 50px;
+    height: 50pxpx;
+    border-radius: 50px;
+}
+
+.board-artist-name h2 {
+    margin: 0;
+}
+
+.board-artist-name h2 {
+    font-family: "Felix Titling", serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: black;
+    margin: 0;
+    line-height: normal;
 }

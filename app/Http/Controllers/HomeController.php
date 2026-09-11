@@ -38,9 +38,15 @@ class HomeController extends Controller
 
         $artistProfile->load(['country', 'state', 'city', 'user']);
 
+        $savedBoardImages = [];
+        if (auth()->check() && auth()->user()->hasRole('customer')) {
+            $savedBoardImages = auth()->user()->boardItems()->pluck('image_path')->toArray();
+        }
+
         return view('tattoo-artist-details', [
             'user'    => $user,
             'profile' => $artistProfile,
+            'savedBoardImages' => $savedBoardImages
         ]);
     }
 
@@ -82,7 +88,12 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-        return view('tattoo-artist', compact('artists', 'highlighted'));
+        $favouriteIds = [];
+        if (auth()->check() && auth()->user()->hasRole('customer')) {
+            $favouriteIds = auth()->user()->favouriteArtists()->pluck('users.id')->toArray();
+        }
+
+        return view('tattoo-artist', compact('artists', 'highlighted', 'favouriteIds'));
     }
 
     public function about()

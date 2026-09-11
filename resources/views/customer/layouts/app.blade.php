@@ -226,113 +226,63 @@
         <div class="ms-aside-body">
             <div class="booking-details">
                 <div class="booking-information">
-                    <h3>Booked</h3>
-                    <h3><a href="javascript:;" class="cancel-booking">Cancel Booking</a></h3>
+                    <h3 id="rd-status">Request</h3>
+                    <a href="javascript:;" class="ms-toggler rd-close" data-target="#ms-recent-activity" data-toggle="slideRight">
+                        <i class="fa fa-times"></i>
+                    </a>
                 </div>
-                <div class="booking-images">
-                    <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/booking-img-1.png" alt="">
-                    <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/booking-img-1.png" alt="">
-                    <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/booking-img-1.png" alt="">
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Type</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Color</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Size</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Style</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Additional Notes</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.Lorem Ipsum is simply dummy text of the printing.Lorem Ipsum is simply dummy text of the printing.Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-timing">
-                    <ul>
-                        <li>
-                            <h6>Time</h6>
-                            <p>Monday (9am to 12 pm )</p>
-                        </li>
-                        <li>
-                            <h6>Hours</h6>
-                            <p>1- 2</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="booking-cancel">
-                <a href="javascript:;" class="back-to-details"><img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/circle-left.png" alt=""></a>
-                <div class="booking-information">
-                    <h3>Cancel Reason</h3>
-                </div>
-                <p>Select a reason for cancelling this booking.</p>
-                <form action="">
-                    <div class="form-group">
-                        <label for="">Select Reason</label>
-                        <select class="form-control" id="exampleSelect">
-                            <option value="" disabled selected>Select a reason</option>
 
-                            <optgroup label="Client Reasons">
-                                <option value="change_of_mind">Change of mind</option>
-                                <option value="scheduling_conflict">Scheduling conflict</option>
-                                <option value="found_another_artist">Found another artist</option>
-                                <option value="budget_constraints">Budget constraints</option>
-                                <option value="design_not_finalized">Design not finalized</option>
-                                <option value="need_more_time">Need more time to decide</option>
-                                <option value="personal_reasons">Personal reasons</option>
-                                <option value="health_related_concern">Health-related concern</option>
-                                <option value="travel_issues">Travel issues</option>
-                            </optgroup>
+                <div class="booking-box rd-images">
+                    <div class="booking-images" id="rd-images"></div>
+                </div>
 
-                            <optgroup label="Artist / Studio Reasons">
-                                <option value="artist_unavailable">Artist unavailable</option>
-                                <option value="design_revisions_needed">Design revisions needed</option>
-                                <option value="equipment_or_studio_issue">Equipment or studio issue</option>
-                                <option value="rescheduled_by_artist">Rescheduled by artist</option>
-                            </optgroup>
-
-                            <optgroup label="Booking / System">
-                                <option value="incorrect_booking_details">Incorrect booking details</option>
-                                <option value="duplicate_booking">Duplicate booking</option>
-                                <option value="payment_issue">Payment issue</option>
-                            </optgroup>
-
-                            <optgroup label="General">
-                                <option value="emergency_situation">Emergency situation</option>
-                                <option value="weather_or_transportation_issue">Weather or transportation issue</option>
-                                <option value="no_longer_needed">No longer needed</option>
-                                <option value="other">Other</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Description</label>
-                        <textarea name="" id="" class="form-control"></textarea>
-                    </div>
-                    <button class="btn btn-black">Submit</button>
-                </form>
+                <div class="booking-box">
+                    <h6>Description</h6>
+                    <p id="rd-idea">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Placement</h6>
+                    <p id="rd-placement">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Size</h6>
+                    <p id="rd-size">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Available days</h6>
+                    <p id="rd-days">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Time</h6>
+                    <p id="rd-time">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Budget</h6>
+                    <p id="rd-budget">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Pronouns</h6>
+                    <p id="rd-pronouns">—</p>
+                </div>
+                <div class="booking-box">
+                    <h6>Timeframe</h6>
+                    <p id="rd-timeframe">—</p>
+                </div>
             </div>
         </div>
+
         <div class="booking-designer">
             <div class="designer-info">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/design-user-img.png" alt="">
-                <h2>Ink by Nova <span>@inkbynova</span></h2>
+                <img id="rd-artist-avatar" src="" alt="">
+                <h2 id="rd-artist-name">Artist <span id="rd-artist-shop"></span></h2>
             </div>
             <div class="designer-msg">
-                <a href="chat.php">
-                    <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/message-text.png" alt="">
+                <a href="#" id="rd-chat-link">
+                    <img src="{{ asset('portal/img/message-text.png') }}" alt="">
                 </a>
             </div>
         </div>
     </aside>
-
     <script src="{{ asset('portal/js/jquery-3.5.1.min.js') }}"></script>
     <script src="{{ asset('portal/js/popper.min.js') }}"></script>
     <script src="{{ asset('portal/js/bootstrap.min.js') }}"></script>

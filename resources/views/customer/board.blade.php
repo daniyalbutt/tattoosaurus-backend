@@ -9,51 +9,29 @@
 </div>
 <div class="board-gallery">
     <div class="row">
-        <div class="col-md-3">
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-1.png" alt="">
+        @forelse($items as $item)
+            @php
+                $artistAvatar = $item->artist->artistProfile?->avatar
+                    ? asset('storage/'.$item->artist->artistProfile->avatar)
+                    : 'https://ui-avatars.com/api/?name='.urlencode($item->artist->name).'&size=60';
+            @endphp
+            <div class="col-md-3">
+                <a href="{{ route('artist.public.show', $item->artist->artistProfile) }}" class="board-gallery-img">
+                    <img src="{{ asset('storage/'.$item->image_path) }}" alt="{{ $item->artist->name }}">
+                    <div class="board-artist-name">
+                        <img src="{{ $artistAvatar }}" alt="">
+                        <div>
+                            <h2>{{ $item->artist->name }}</h2>
+                            <span>{{ $item->artist->artistProfile?->shop_name ?: '—' }}</span>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-2.png" alt="">
+        @empty
+            <div class="col-md-12">
+                <p>You haven't saved any images to your board yet.</p>
             </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-3.png" alt="">
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-4.png" alt="">
-            </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-5.png" alt="">
-            </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-6.png" alt="">
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-7.png" alt="">
-            </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-8.png" alt="">
-            </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-9.png" alt="">
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-10.png" alt="">
-            </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-11.png" alt="">
-            </div>
-            <div class="board-gallery-img">
-                <img src="https://samplelinkweb.site/custom-html/tattoosaurus-front/user/img/board-gallery-img-12.png" alt="">
-            </div>
-        </div>
+        @endforelse
     </div>
 </div>
-
 @endsection

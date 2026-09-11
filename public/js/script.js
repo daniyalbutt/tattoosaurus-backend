@@ -297,15 +297,17 @@ function initOtpInputs() {
    MASONRY
 ================================ */
 function initMasonry() {
-    const grid = document.querySelector('.masonry-grid');
-    if (!grid) return;
+    const grids = document.querySelectorAll('.masonry-grid');
+    if (!grids.length) return;
 
-    imagesLoaded(grid, () => {
-        new Masonry(grid, {
-            itemSelector: '.masonry-item',
-            columnWidth: '.masonry-sizer',
-            percentPosition: true,
-            gutter: 22
+    grids.forEach(grid => {
+        imagesLoaded(grid, () => {
+            new Masonry(grid, {
+                itemSelector: '.masonry-item',
+                columnWidth: '.masonry-sizer',
+                percentPosition: true,
+                gutter: 22
+            });
         });
     });
 }

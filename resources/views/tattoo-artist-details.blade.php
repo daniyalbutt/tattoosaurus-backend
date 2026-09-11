@@ -145,24 +145,35 @@
             <div class="col-md-12">
                 <div class="masonry-grid">
                     <div class="masonry-sizer"></div>
-
                     @forelse($portfolio as $item)
-                        @php $imgPath = is_array($item) ? ($item['image'] ?? $item) : $item; @endphp
+                        @php
+                            $imgPath = is_array($item) ? ($item['image'] ?? $item) : $item;
+                            $isSaved = in_array($imgPath, $savedBoardImages ?? []);
+                        @endphp
                         <div class="masonry-item">
                             <img src="{{ asset('storage/'.$imgPath) }}" alt="{{ is_array($item) ? ($item['description'] ?? '') : '' }}">
-                            <div class="artist-name">
-                                <img src="{{ $avatar }}" alt="">
-                                <h1>{{ $user->name }} <span>{{ $location }}</span></h1>
-                            </div>
-                            <div class="artist-bottom">
+                            <div class="artist-bottom {{ $isSaved ? 'active' : '' }}">
+                                <ul></ul>
                                 <ul>
-                                    <li><a href="#"><i class="fa-solid fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa-solid fa-comment-dots"></i></a></li>
-                                    <li><a href="#"><i class="fa-solid fa-share-nodes"></i></a></li>
-                                    <li><a href="#"><i class="fa-solid fa-flag"></i></a></li>
-                                </ul>
-                                <ul>
-                                    <li><a href="#"><i class="fa-solid fa-bookmark"></i></a></li>
+                                    @auth
+                                        @if(auth()->user()->hasRole('customer'))
+                                            <li>
+                                                <a href="#"
+                                                class="board-btn {{ $isSaved ? 'active' : '' }}"
+                                                data-artist-id="{{ $user->id }}" data-image="{{ $imgPath }}">
+                                                    <i class="fa-solid fa-bookmark"></i>
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @else
+                                        <li>
+                                            <a href="#" class="board-guest-btn"
+                                            data-artist-id="{{ $user->id }}" data-image="{{ $imgPath }}"
+                                            data-bs-toggle="modal" data-bs-target="#loginModal">
+                                                <i class="fa-solid fa-bookmark"></i>
+                                            </a>
+                                        </li>
+                                    @endauth
                                 </ul>
                             </div>
                         </div>
@@ -189,24 +200,35 @@
             <div class="col-md-12">
                 <div class="masonry-grid masonry-grid-flash">
                     <div class="masonry-sizer"></div>
-
                     @forelse($flash as $item)
-                        @php $imgPath = is_array($item) ? ($item['image'] ?? $item) : $item; @endphp
+                        @php
+                            $imgPath = is_array($item) ? ($item['image'] ?? $item) : $item;
+                            $isSaved = in_array($imgPath, $savedBoardImages ?? []);
+                        @endphp
                         <div class="masonry-item">
                             <img src="{{ asset('storage/'.$imgPath) }}" alt="">
-                            <div class="artist-name">
-                                <img src="{{ $avatar }}" alt="">
-                                <h1>{{ $user->name }} <span>{{ $location }}</span></h1>
-                            </div>
-                            <div class="artist-bottom">
+                            <div class="artist-bottom {{ $isSaved ? 'active' : '' }}">
+                                <ul></ul>
                                 <ul>
-                                    <li><a href="#"><i class="fa-solid fa-heart"></i></a></li>
-                                    <li><a href="#"><i class="fa-solid fa-comment-dots"></i></a></li>
-                                    <li><a href="#"><i class="fa-solid fa-share-nodes"></i></a></li>
-                                    <li><a href="#"><i class="fa-solid fa-flag"></i></a></li>
-                                </ul>
-                                <ul>
-                                    <li><a href="#"><i class="fa-solid fa-bookmark"></i></a></li>
+                                    @auth
+                                        @if(auth()->user()->hasRole('customer'))
+                                            <li>
+                                                <a href="#"
+                                                class="board-btn {{ $isSaved ? 'active' : '' }}"
+                                                data-artist-id="{{ $user->id }}" data-image="{{ $imgPath }}">
+                                                    <i class="fa-solid fa-bookmark"></i>
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @else
+                                        <li>
+                                            <a href="#" class="board-guest-btn"
+                                            data-artist-id="{{ $user->id }}" data-image="{{ $imgPath }}"
+                                            data-bs-toggle="modal" data-bs-target="#loginModal">
+                                                <i class="fa-solid fa-bookmark"></i>
+                                            </a>
+                                        </li>
+                                    @endauth
                                 </ul>
                             </div>
                         </div>
