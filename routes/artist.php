@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Artist\DashboardController;
 use App\Http\Controllers\Artist\ProfileController;
 use App\Http\Controllers\Artist\AvailabilityController;
+use App\Http\Controllers\Artist\RequestController;
 
 Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -30,4 +31,8 @@ Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('flash',  [ProfileController::class, 'flash'])->name('flash.edit');
     Route::post('flash', [ProfileController::class, 'updateFlash'])->name('flash.update');
     Route::patch('flash/feature/{index}', [ProfileController::class, 'featureFlash'])->name('flash.feature');
+
+    Route::get('requests',                    [RequestController::class, 'index'])->name('requests');
+    Route::get('requests/{conversation}',     [RequestController::class, 'show'])->name('requests.show');
+    Route::post('requests/{conversation}',    [RequestController::class, 'sendMessage'])->name('requests.message');
 });

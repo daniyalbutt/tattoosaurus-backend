@@ -35,7 +35,7 @@
             <button type="button" class="back-btn" id="backBtn">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <a href="{{ route('artist.public.show', $artist) }}" class="finish-later-btn">Finish later</a>
+            <a href="{{ route('artist.public.show', $artist->artistProfile) }}">Finish later</a>
         </div>
 
         <div class="booking-progress-bar">

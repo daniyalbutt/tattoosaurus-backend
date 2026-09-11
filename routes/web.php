@@ -14,7 +14,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Stubs — point these at real controllers as you build each page
 Route::post('/login',  [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/tattoo-artist/{user}', [HomeController::class, 'show'])->name('artist.public.show');
+Route::get('/tattoo-artist/{artistProfile:slug}', [HomeController::class, 'show'])->name('artist.public.show');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/faqs', [HomeController::class, 'faqs'])->name('faqs');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');

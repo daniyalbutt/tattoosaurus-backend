@@ -6,6 +6,8 @@ use App\Models\TattooRequest;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use App\Mail\NewTattooRequest;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -63,6 +65,10 @@ class BookingController extends Controller
             'artist_id'        => $artist->id,
             'tattoo_request_id'=> $tattooRequest->id,
         ]);
+
+        Mail::to($artist->email)->send(
+            new NewTattooRequest($artist, auth()->user(), $tattooRequest)
+        );
 
         // redirect to this specific conversation
         return redirect()->route('customer.requests.show', $conversation);

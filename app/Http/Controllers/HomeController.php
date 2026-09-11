@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ArtistProfile;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -25,19 +27,20 @@ class HomeController extends Controller
         return view('home', compact('topArtists', 'featuredArtists'));
     }
 
-    public function show(User $user)
+    public function show(ArtistProfile $artistProfile)
     {
-        // only active artists are publicly viewable
+        $user = $artistProfile->user;
+
         abort_unless(
-            $user->hasRole('artist') && $user->status === 'active',
+            $user && $user->hasRole('artist') && $user->status === 'active',
             404
         );
 
-        $user->load(['artistProfile.country', 'artistProfile.state', 'artistProfile.city']);
+        $artistProfile->load(['country', 'state', 'city', 'user']);
 
         return view('tattoo-artist-details', [
             'user'    => $user,
-            'profile' => $user->artistProfile,
+            'profile' => $artistProfile,
         ]);
     }
 
@@ -49,8 +52,37 @@ class HomeController extends Controller
         return view('flash-gallery');
     }
 
-    public function artistSearch(){
-        return view('tattoo-artist');
+    public function artistSearch(Request $request)
+    {
+        $q = $request->input('q');
+
+        $artists = User::role('artist')
+            ->where('status', 'active')
+            ->whereHas('artistProfile')
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhereHas('artistProfile', function ($p) use ($q) {
+                            $p->where('shop_name', 'like', "%{$q}%")
+                            ->orWhereHas('city',    fn ($c) => $c->where('name', 'like', "%{$q}%"))
+                            ->orWhereHas('country', fn ($c) => $c->where('name', 'like', "%{$q}%"));
+                        });
+                });
+            })
+            ->with(['artistProfile.city', 'artistProfile.country', 'artistProfile.user'])
+            ->latest()
+            ->get();
+
+        $highlighted = User::role('artist')
+            ->where('status', 'active')
+            ->whereHas('artistProfile', fn ($p) =>
+                $p->where(fn ($sub) => $sub->where('is_featured', true)->orWhere('is_top', true))
+            )
+            ->with(['artistProfile.city', 'artistProfile.country', 'artistProfile.user'])
+            ->take(10)
+            ->get();
+
+        return view('tattoo-artist', compact('artists', 'highlighted'));
     }
 
     public function about()

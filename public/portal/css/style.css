@@ -2905,8 +2905,9 @@ input:checked + .ms-switch-slider.ms-switch-dark{
 .ms-dark-theme .btn:hover{
   color: #fff;
 }
-.btn-link{
+.ms-chat-textbox .btn-link{
   color: #3377e8;
+  margin: 0;
 }
 .btn.btn-square,
 .ms-btn-icon.btn-square,
@@ -5378,7 +5379,7 @@ li .ms-count{
 .ms-chat-textbox{
   padding: 1rem;
   border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 25px;
+  border-radius: 0;
 }
 .ms-chat-textbox .ms-chat-input{
   flex: 1 1 auto;

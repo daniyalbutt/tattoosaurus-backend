@@ -91,6 +91,11 @@ class ArtistRegistrationController extends Controller
         if ($request->hasFile('avatar')) {
             $profile->avatar = $request->file('avatar')->store('artists/avatars', 'public');
         }
+
+        $profile->slug = \App\Models\ArtistProfile::generateUniqueSlug(
+            $profile->shop_name ?: $user->name,
+            $profile->id
+        );
         $profile->save();
 
         return response()->json(['ok' => true, 'step' => 'gallery']);

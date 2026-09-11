@@ -100,6 +100,11 @@
                     </li>
                 </ul>
             </li>
+            <li class="menu-item">
+                <a href="{{ route('artist.requests') }}" class="{{ request()->routeIs('artist.requests*') ? 'active' : '' }}">
+                    <span><img src="{{ asset('portal/img/box.png') }}" alt="">Request Received</span>
+                </a>
+            </li>
         </ul>
     </aside>
     <div id="notificationSidebar" class="notification-sidebar">

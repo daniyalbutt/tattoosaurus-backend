@@ -96,7 +96,7 @@
                             @endphp
                             <div class="gallery-box">
                                 <div class="gallery-box-inner">
-                                    <a href="{{ route('artist.public.show', $artist) }}">
+                                    <a href="{{ route('artist.public.show', $artist->artistProfile) }}">
                                         <img src="{{ $img }}" alt="{{ $artist->name }}">
                                     </a>
                                 </div>
@@ -175,7 +175,7 @@
                             @endphp
                             <div class="artist-wrapper">
                                 <div class="artist-box">
-                                    <a href="{{ route('artist.public.show', $artist) }}">
+                                    <a href="{{ route('artist.public.show', $artist->artistProfile) }}">
                                         <img src="{{ $img }}" alt="{{ $artist->name }}">
                                         <div class="artist-lower">
                                             <h6>{{ $loc ?: '—' }}</h6>

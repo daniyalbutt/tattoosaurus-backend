@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Nnjeim\World\Models\Country;
 use Nnjeim\World\Models\State;
 use Nnjeim\World\Models\City;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ArtistProfile extends Model
 {
     protected $fillable = [
         'user_id','country_id','state_id','city_id','bio','avatar','portfolio_images',
         'social_links','availability','response_time','hourly_rate','faqs','styles',
-        'is_top', 'is_featured', 'shop_name', 'flash_images', 'featured_source', 'featured_portfolio_index'
+        'is_top', 'is_featured', 'shop_name', 'flash_images', 'featured_source', 'featured_portfolio_index', 'slug'
     ];
 
     protected $casts = [
@@ -23,7 +25,6 @@ class ArtistProfile extends Model
         'is_top' => 'boolean',
         'is_featured' => 'boolean',
         'flash_images' => 'array',
-        'social_links' => 'array',
         'availability' => 'array', 
         'styles' => 'array'
     ];
@@ -39,6 +40,7 @@ class ArtistProfile extends Model
         $fields = [
             $this->bio,
             $this->avatar,
+            $this->shop_name,
             $this->country_id,
             $this->availability,
             $this->response_time,
@@ -47,6 +49,7 @@ class ArtistProfile extends Model
             !empty($this->faqs),
             !empty($this->styles),
             !empty($this->portfolio_images),
+            !empty($this->flash_images),
         ];
 
         $filled = collect($fields)->filter(fn ($v) => !empty($v))->count();
@@ -74,5 +77,44 @@ class ArtistProfile extends Model
 
         // fallback: first portfolio image, then avatar
         return ($this->portfolio_images[0] ?? null) ?: $this->avatar;
+    }
+
+    public function getDisplayImageAttribute(): ?string
+    {
+        foreach ([$this->featured_image, $this->avatar] as $path) {
+            if ($path && Storage::disk('public')->exists($path)) {
+                return asset('storage/' . $path);
+            }
+        }
+        return null; // let the view pick the placeholder
+    }
+
+    public static function generateUniqueSlug(string $base, ?int $ignoreId = null): string
+    {
+        $slug = Str::slug($base) ?: 'artist';
+        $original = $slug;
+        $i = 1;
+
+        while (self::where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists()) {
+            $slug = $original . '-' . $i++;
+        }
+        return $slug;
+    }
+
+    public function getDisplayAvatarAttribute(): string
+    {
+        if ($this->avatar && Storage::disk('public')->exists($this->avatar)) {
+            return asset('storage/' . $this->avatar);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->user->name) . '&size=80';
+    }
+
+    public function getLocationAttribute(): string
+    {
+        return collect([$this->city?->name, $this->country?->name])
+            ->filter()
+            ->implode(', ');
     }
 }
