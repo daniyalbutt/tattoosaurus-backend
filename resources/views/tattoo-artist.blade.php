@@ -56,9 +56,10 @@
                                 @if(auth()->user()->hasRole('customer'))
                                     <li>
                                         <a href="#"
-                                        class="favourite-btn {{ in_array($artist->id, $favouriteIds ?? []) ? 'active' : '' }}"
-                                        data-artist-id="{{ $artist->id }}">
-                                            <i class="fa-solid fa-heart"></i>
+                                            class="favourite-btn {{ in_array($artist->id, $favouriteIds ?? []) ? 'active' : '' }}"
+                                            data-artist-id="{{ $artist->id }}"
+                                            data-artist-name="{{ $artist->name }}">
+                                                <i class="fa-solid fa-heart"></i>
                                         </a>
                                     </li>
                                 @endif
@@ -70,12 +71,31 @@
                                     </a>
                                 </li>
                             @endauth
-                            <li><a href="#"><i class="fa-solid fa-comment-dots"></i></a></li>
-                            <li><a href="#"><i class="fa-solid fa-share-nodes"></i></a></li>
-                            <li><a href="#"><i class="fa-solid fa-flag"></i></a></li>
+                            <li>
+                                <a href="#" class="review-btn"
+                                data-artist-id="{{ $artist->id }}"
+                                data-artist-name="{{ $artist->name }}"
+                                @guest data-bs-toggle="modal" data-bs-target="#loginModal" @endguest>
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share-btn" data-share-url="{{ route('artist.public.show', $artist->artistProfile) }}"
+                                data-share-name="{{ $artist->name }}">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="report-btn"
+                                data-artist-id="{{ $artist->id }}"
+                                data-artist-name="{{ $artist->name }}"
+                                @guest data-bs-toggle="modal" data-bs-target="#loginModal" @endguest>
+                                    <i class="fa-solid fa-flag"></i>
+                                </a>
+                            </li>
                         </ul>
                         <ul>
-                            <li><a href="#"><i class="fa-solid fa-bookmark"></i></a></li>
+                            
                         </ul>
                     </div>
                 </div>

@@ -697,3 +697,139 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade register-modal" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/review-img.jpg') }}" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading">
+                                <h6>Leave a Review</h6>
+                                <h2>Share Your Experience with <span id="reviewArtistName"></span></h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-11">
+                                        <form id="reviewForm" class="contact-form login-form" novalidate>
+                                            <input type="hidden" name="artist_id" id="reviewArtistId">
+
+                                            {{-- Rating --}}
+                                            <div class="input-group-wrapper">
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <img src="{{ asset('img/award-img.png') }}" alt="">
+                                                    </span>
+                                                    <select name="rating" class="form-control">
+                                                        <option value="">No rating</option>
+                                                        @for($i = 5; $i >= 1; $i--)
+                                                            <option value="{{ $i }}">{{ str_repeat('★', $i) }} ({{ $i }})</option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
+                                                <small class="field-error text-danger d-block mt-1" data-error="rating"></small>
+                                            </div>
+
+                                            <div class="input-group-wrapper">
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <img src="{{ asset('img/form-icon-5.png') }}" alt="">
+                                                    </span>
+                                                    <textarea name="comment" class="form-control" rows="4"
+                                                            placeholder="Tell others about your experience…"></textarea>
+                                                </div>
+                                                <small class="field-error text-danger d-block mt-1" data-error="comment"></small>
+                                            </div>
+
+                                            <div id="reviewError" class="alert alert-danger d-none mt-2"></div>
+
+                                            <button type="submit" class="btn btn-gradient" id="reviewSubmit">Submit Review</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade register-modal" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="register-img">
+                            <img src="{{ asset('img/report-img.jpg') }}" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="register-content">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <div class="section-heading">
+                                <h6>Report</h6>
+                                <h2>Report <span id="reportArtistName"></span></h2>
+                                <div class="line">
+                                    <img src="{{ asset('img/line-bg.png') }}" alt="">
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-11">
+                                        <form id="reportForm" class="contact-form login-form" novalidate>
+                                            <input type="hidden" name="artist_id" id="reportArtistId">
+
+                                            {{-- Reason --}}
+                                            <div class="input-group-wrapper">
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <img src="{{ asset('img/form-icon-2.png') }}" alt="">
+                                                    </span>
+                                                    <select name="reason" class="form-control">
+                                                        <option value="">Select a reason</option>
+                                                        <option value="inappropriate_content">Inappropriate content</option>
+                                                        <option value="spam">Spam or scam</option>
+                                                        <option value="impersonation">Impersonation</option>
+                                                        <option value="harassment">Harassment</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <small class="field-error text-danger d-block mt-1" data-error="reason"></small>
+                                            </div>
+
+                                            {{-- Details --}}
+                                            <div class="input-group-wrapper">
+                                                <div class="input-group">
+                                                    <span class="input-group-text">
+                                                        <img src="{{ asset('img/form-icon-5.png') }}" alt="">
+                                                    </span>
+                                                    <textarea name="details" class="form-control" rows="4"
+                                                              placeholder="Describe the issue…"></textarea>
+                                                </div>
+                                                <small class="field-error text-danger d-block mt-1" data-error="details"></small>
+                                            </div>
+
+                                            <div id="reportError" class="alert alert-danger d-none mt-2"></div>
+
+                                            <button type="submit" class="btn btn-gradient" id="reportSubmit">Submit Report</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

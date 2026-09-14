@@ -352,3 +352,10 @@ $(window).on('scroll', function() {
         $('header').removeClass('fixed-header');
     }
 });
+
+function showFavouriteToast(message) {
+    document.getElementById('favouriteToastMsg').textContent = message;
+    const toastEl = document.getElementById('favouriteToast');
+    const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 });
+    toast.show();
+}

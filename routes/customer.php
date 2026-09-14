@@ -4,6 +4,9 @@ use App\Http\Controllers\Customer\DashboardController;
 use App\Http\Controllers\Customer\RequestController;
 use App\Http\Controllers\Customer\FavouriteController;
 use App\Http\Controllers\Customer\BoardController;
+use App\Http\Controllers\Customer\ReviewController;
+use App\Http\Controllers\Customer\ReportController;
+
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('dashboard',  [DashboardController::class, 'index'])->name('dashboard');
@@ -25,4 +28,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::post('board/toggle', [BoardController::class, 'toggle'])->name('board.toggle');
     
+    Route::post('/artist/{artist}/review', [ReviewController::class, 'store'])->middleware(['auth', 'role:customer'])->name('artist.review');
+
+    Route::post('/artist/{artist}/report', [ReportController::class, 'store'])->middleware(['auth'])->name('artist.report');
+
 });

@@ -159,8 +159,10 @@
                                         @if(auth()->user()->hasRole('customer'))
                                             <li>
                                                 <a href="#"
-                                                class="board-btn {{ $isSaved ? 'active' : '' }}"
-                                                data-artist-id="{{ $user->id }}" data-image="{{ $imgPath }}">
+                                                    class="board-btn {{ $isSaved ? 'active' : '' }}"
+                                                    data-artist-id="{{ $user->id }}"
+                                                    data-artist-name="{{ $user->name }}"
+                                                    data-image="{{ $imgPath }}">
                                                     <i class="fa-solid fa-bookmark"></i>
                                                 </a>
                                             </li>
@@ -214,8 +216,10 @@
                                         @if(auth()->user()->hasRole('customer'))
                                             <li>
                                                 <a href="#"
-                                                class="board-btn {{ $isSaved ? 'active' : '' }}"
-                                                data-artist-id="{{ $user->id }}" data-image="{{ $imgPath }}">
+                                                    class="board-btn {{ $isSaved ? 'active' : '' }}"
+                                                    data-artist-id="{{ $user->id }}"
+                                                    data-artist-name="{{ $user->name }}"
+                                                    data-image="{{ $imgPath }}">
                                                     <i class="fa-solid fa-bookmark"></i>
                                                 </a>
                                             </li>

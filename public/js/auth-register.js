@@ -246,6 +246,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.addEventListener('click', function (e) {
+        const guestBtn = e.target.closest('.favourite-guest-btn');
+        if (!guestBtn) return;
+        sessionStorage.setItem('intended_url', window.location.href);
+        sessionStorage.setItem('pendingFavourite', guestBtn.dataset.artistId);
+    });
+
     // "Create an account" from the login modal → always customer
     document.querySelectorAll('.goto-register-customer').forEach(link => {
         link.addEventListener('click', () => {
@@ -479,5 +486,119 @@ document.addEventListener('DOMContentLoaded', () => {
             stopLoading(btn);
         }
     });
-    
+
+    // guest clicked review → remember page + which artist (KEEP THIS)
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.review-btn');
+        if (!btn) return;
+        if (!btn.hasAttribute('data-bs-target')) return; // only guests have data-bs-target
+        sessionStorage.setItem('intended_url', window.location.href);
+        sessionStorage.setItem('pendingReview', JSON.stringify({
+            id: btn.dataset.artistId,
+            name: btn.dataset.artistName
+        }));
+    });
+
+    // reopen review modal after login — IIFE runs now (DOM already ready)
+    (function () {
+        const raw = sessionStorage.getItem('pendingReview');
+        if (!raw) return;
+        sessionStorage.removeItem('pendingReview');
+
+        const { id, name } = JSON.parse(raw);
+        const idEl = document.getElementById('reviewArtistId');
+        const nameEl = document.getElementById('reviewArtistName');
+        if (!idEl || !nameEl) return;  // review modal not on this page
+
+        idEl.value = id;
+        nameEl.textContent = name;
+
+        document.querySelectorAll('#reviewForm .field-error').forEach(el => el.textContent = '');
+        document.getElementById('reviewError')?.classList.add('d-none');
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('reviewModal')).show();
+    })();
+
+    // open report modal (logged-in users only; guests get login modal)
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.report-btn');
+        if (!btn) return;
+        if (btn.hasAttribute('data-bs-target')) return; // guest → login modal
+        e.preventDefault();
+
+        document.getElementById('reportArtistId').value = btn.dataset.artistId;
+        document.getElementById('reportArtistName').textContent = btn.dataset.artistName;
+
+        document.querySelectorAll('#reportForm .field-error').forEach(el => el.textContent = '');
+        document.getElementById('reportError').classList.add('d-none');
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('reportModal')).show();
+    });
+
+    // submit report
+    document.getElementById('reportForm')?.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const id = document.getElementById('reportArtistId').value;
+        const errBox = document.getElementById('reportError');
+        errBox.classList.add('d-none');
+        document.querySelectorAll('#reportForm .field-error').forEach(el => el.textContent = '');
+
+        const res = await fetch(`/artist/${id}/report`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: new FormData(this),
+        });
+
+        const body = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+            this.reset();
+            showFavouriteToast('Thank you. Our team will review this report.');
+        } else if (res.status === 422 && body.errors) {
+            Object.entries(body.errors).forEach(([field, msgs]) => {
+                const slot = document.querySelector(`#reportForm .field-error[data-error="${field}"]`);
+                if (slot) slot.textContent = msgs[0];
+            });
+        } else {
+            errBox.textContent = body.message ?? 'Could not submit. Please try again.';
+            errBox.classList.remove('d-none');
+        }
+    });
+
+    // guest clicked report → remember page + artist
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.report-btn');
+        if (!btn) return;
+        if (!btn.hasAttribute('data-bs-target')) return; // only guests
+        sessionStorage.setItem('intended_url', window.location.href);
+        sessionStorage.setItem('pendingReport', JSON.stringify({
+            id: btn.dataset.artistId,
+            name: btn.dataset.artistName
+        }));
+    });
+
+    // reopen report modal after login (IIFE — runs now)
+    (function () {
+        const raw = sessionStorage.getItem('pendingReport');
+        if (!raw) return;
+        sessionStorage.removeItem('pendingReport');
+
+        const { id, name } = JSON.parse(raw);
+        const idEl = document.getElementById('reportArtistId');
+        const nameEl = document.getElementById('reportArtistName');
+        if (!idEl || !nameEl) return;
+
+        idEl.value = id;
+        nameEl.textContent = name;
+
+        document.querySelectorAll('#reportForm .field-error').forEach(el => el.textContent = '');
+        document.getElementById('reportError')?.classList.add('d-none');
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('reportModal')).show();
+    })();
+
 });
