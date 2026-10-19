@@ -6,6 +6,7 @@ use App\Http\Controllers\Customer\FavouriteController;
 use App\Http\Controllers\Customer\BoardController;
 use App\Http\Controllers\Customer\ReviewController;
 use App\Http\Controllers\Customer\ReportController;
+use App\Http\Controllers\Customer\PaymentController;
 
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
@@ -31,5 +32,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/artist/{artist}/review', [ReviewController::class, 'store'])->middleware(['auth', 'role:customer'])->name('artist.review');
 
     Route::post('/artist/{artist}/report', [ReportController::class, 'store'])->middleware(['auth'])->name('artist.report');
+
+    Route::post('requests/{conversation}/pay-deposit', [PaymentController::class, 'payDeposit'])->name('requests.pay-deposit');
+    Route::get('payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('payment/cancel',  [PaymentController::class, 'cancel'])->name('payment.cancel');
 
 });

@@ -9,6 +9,17 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div class="row"><div class="col-md-12">
+        <div class="alert alert-success">{{ session('success') }}</div>
+    </div></div>
+@endif
+@if(session('error'))
+    <div class="row"><div class="col-md-12">
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    </div></div>
+@endif
+
 <div class="row">
     {{-- LEFT: conversation list --}}
     <div class="col-xl-4 col-md-12">
@@ -60,6 +71,63 @@
                     : 'https://ui-avatars.com/api/?name=' . urlencode($active->artist->name) . '&size=80';
                 $myAvatar = 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&size=80';
             @endphp
+
+            {{-- ── PAYMENT PANEL ──────────────────────────────────── --}}
+            @if($active->request)
+                @php
+                    $req = $active->request;
+                    $platformFee = config('services.stripe.platform_fee', 10);
+                @endphp
+                @if($req->tattoo_price)
+                    <div class="ms-panel mb-3">
+                        <div class="ms-panel-body">
+                            <h5 class="mb-3">Payment</h5>
+                            <table class="table table-sm table-borderless mb-3">
+                                <tbody>
+                                    <tr>
+                                        <td class="pl-0"><strong>Tattoo Price</strong></td>
+                                        <td class="text-right">${{ number_format($req->tattoo_price, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pl-0"><strong>Deposit</strong></td>
+                                        <td class="text-right">${{ number_format($req->deposit_amount, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pl-0"><strong>Platform Fee</strong></td>
+                                        <td class="text-right">${{ number_format($platformFee, 2) }}</td>
+                                    </tr>
+                                    <tr class="border-top">
+                                        <td class="pl-0"><strong>Remaining Balance</strong></td>
+                                        <td class="text-right"><strong>${{ number_format($req->remaining_balance, 2) }}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            @if($req->payment_status === 'deposit_pending')
+                                <form method="POST" action="{{ route('customer.requests.pay-deposit', $active) }}">
+                                    @csrf
+                                    <button class="btn btn-black w-auto">
+                                        Pay Deposit — ${{ number_format($req->deposit_amount + $platformFee, 2) }}
+                                    </button>
+                                </form>
+                            @elseif($req->payment_status === 'payment_failed')
+                                <div class="alert alert-danger mb-2">Your last payment failed. Please try again.</div>
+                                <form method="POST" action="{{ route('customer.requests.pay-deposit', $active) }}">
+                                    @csrf
+                                    <button class="btn btn-black w-auto">
+                                        Retry Deposit — ${{ number_format($req->deposit_amount + $platformFee, 2) }}
+                                    </button>
+                                </form>
+                            @else
+                                <span class="badge bg-success" style="font-size:13px;">
+                                    {{ ucfirst(str_replace('_', ' ', $req->payment_status)) }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+            @endif
+
             <div class="ms-panel ms-chat-conversations ms-widget">
                 <div class="ms-panel-header">
                     <div class="ms-chat-header justify-content-between">
@@ -130,7 +198,7 @@
                 </div>
 
                 <div class="ms-panel-footer pt-0">
-                    <form id="chatForm" method="POST" action="{{ route('artist.requests.message', $active) }}" enctype="multipart/form-data">
+                    <form id="chatForm" method="POST" action="{{ route('customer.requests.message', $active) }}" enctype="multipart/form-data">
                         @csrf
                         <div class="ms-chat-textbox">
                             <ul class="ms-list-flex mb-0 align-items-center">
@@ -278,7 +346,6 @@
             lastId = Math.max(lastId, m.id);
             scrollToBottom();
 
-            // if the new bubble has an image, re-scroll when it finishes loading
             const newImg = chatBody.querySelector('[data-msg-id="' + m.id + '"] .ms-chat-text img');
             if (newImg && !newImg.complete) {
                 newImg.addEventListener('load', scrollToBottom);
@@ -311,7 +378,7 @@
                 const res = await fetch(sendUrl, {
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
-                    body: fd,   // no Content-Type — browser sets multipart boundary
+                    body: fd,
                 });
                 if (res.ok) append(await res.json());
             } catch (e) { /* silent */ }

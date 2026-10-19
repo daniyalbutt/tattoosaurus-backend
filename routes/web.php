@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\CustomerRegistrationController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\StripeWebhookController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -26,6 +27,8 @@ Route::get('/tattoo-gallery', [HomeController::class, 'tattooGallery'])->name('t
 Route::get('/flash-gallery', [HomeController::class, 'flashGallery'])->name('flash.gallery');
 Route::get('/tattoo-artist', [HomeController::class, 'artistSearch'])->name('artist.search');
 Route::get('/events', [HomeController::class, 'events'])->name('events');
+
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])->name('stripe.webhook');
 
 Route::prefix('locations')->name('locations.')->group(function () {
     Route::get('countries',            [LocationController::class, 'countries'])->name('countries');

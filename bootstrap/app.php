@@ -36,6 +36,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
     })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->validateCsrfTokens(except: [
+            'stripe/webhook',
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

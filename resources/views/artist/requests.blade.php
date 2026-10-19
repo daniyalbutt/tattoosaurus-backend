@@ -9,6 +9,14 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-success">{{ session('success') }}</div>
+        </div>
+    </div>
+@endif
+
 <div class="row">
     {{-- LEFT: conversation list --}}
     <div class="col-xl-4 col-md-12">
@@ -27,6 +35,9 @@
                                             $preview = $lastMsg
                                                 ? ($lastMsg->body ? \Illuminate\Support\Str::limit($lastMsg->body, 40) : '📎 Attachment')
                                                 : 'New request';
+                                            [$statusLabel, $statusColor] = $conv->request
+                                                ? $conv->request->status_label
+                                                : ['Pending', 'warning'];
                                         @endphp
                                         <li class="ms-chat-user-container ms-open-chat ms-deletable p-3 media clearfix {{ $isActive ? 'selected' : '' }}"
                                             onclick="window.location='{{ route('artist.requests.show', $conv) }}'"
@@ -37,7 +48,8 @@
                                             <div class="media-body ms-chat-user-info mt-1">
                                                 <h6>{{ $conv->customer->name }}</h6>
                                                 <span class="ms-chat-time">{{ $conv->updated_at->diffForHumans() }}</span>
-                                                <p>{{ $preview }}</p>
+                                                <p class="mb-1">{{ $preview }}</p>
+                                                <span class="badge bg-{{ $statusColor }}" style="color: white;font-weight: 200;padding: 6px 8px;font-size: 11px;">{{ $statusLabel }}</span>
                                             </div>
                                         </li>
                                     @empty
@@ -61,6 +73,95 @@
                     ? asset('storage/'.auth()->user()->artistProfile->avatar)
                     : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&size=80';
             @endphp
+
+            {{-- ── REQUEST APPROVAL ──────────────────────────────── --}}
+            @if($active->request)
+                @php
+                    $req = $active->request;
+                    $platformFee = config('services.stripe.platform_fee', 10);
+                    $onboarded = auth()->user()->artistProfile?->stripe_onboarded;
+                    $status = $req->status ?? 'pending';
+                @endphp
+
+                @if($status === 'pending')
+                    <div class="ms-panel mb-3">
+                        <div class="ms-panel-body">
+                            <h5 class="mb-1">Review this request</h5>
+                            <p class="text-muted fs-13 mb-3">
+                                Approve to move forward and set pricing, or decline if you can't take it.
+                            </p>
+                            <div class="d-flex flex-wrap" style="gap:.5rem;">
+                                <form method="POST" action="{{ route('artist.requests.approve', $active) }}">
+                                    @csrf
+                                    <button class="btn btn-success">
+                                        <i class="material-icons align-middle mr-1" style="font-size:16px;">check</i>
+                                        Approve Request
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#declineModal">
+                                    <i class="material-icons align-middle mr-1" style="font-size:16px;">close</i>
+                                    Decline
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @elseif($status === 'declined')
+                    <div class="ms-panel mb-3">
+                        <div class="ms-panel-body">
+                            <span class="badge bg-danger mb-2">Declined</span>
+                            <p class="text-muted mb-0 fs-13">You declined this request.</p>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
+            {{-- ── PRICING & DEPOSIT ──────────────────────────────── --}}
+            @if($active->request && ($req->status ?? 'pending') === 'approved')
+                <div class="ms-panel mb-3">
+                    <div class="ms-panel-body">
+                        <h5 class="mb-3">Pricing & Deposit</h5>
+
+                        @if(!$onboarded)
+                            <div class="alert alert-warning mb-0">
+                                <a href="{{ route('artist.payouts') }}">Connect your Stripe account</a> before setting pricing.
+                            </div>
+                        @elseif($req->payment_status === 'deposit_pending' || !$req->tattoo_price)
+                            <form method="POST" action="{{ route('artist.requests.pricing', $active) }}">
+                                @csrf
+                                <div class="row align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="small">Tattoo Price ($)</label>
+                                        <input type="number" name="tattoo_price" class="form-control" step="0.01" min="1"
+                                            value="{{ old('tattoo_price', $req->tattoo_price) }}" placeholder="400.00" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="small">Deposit ($)</label>
+                                        <input type="number" name="deposit_amount" class="form-control" step="0.01" min="1"
+                                            value="{{ old('deposit_amount', $req->deposit_amount) }}" placeholder="100.00" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-black w-100">Set Pricing</button>
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mt-2">
+                                    Customer pays the deposit + ${{ number_format($platformFee, 2) }} platform fee up front;
+                                    the remaining balance is requested after the session.
+                                </small>
+                            </form>
+                        @else
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="mb-1"><strong>Tattoo Price:</strong> ${{ number_format($req->tattoo_price, 2) }}</p>
+                                    <p class="mb-1"><strong>Deposit:</strong> ${{ number_format($req->deposit_amount, 2) }}</p>
+                                    <p class="mb-0"><strong>Remaining:</strong> ${{ number_format($req->remaining_balance, 2) }}</p>
+                                </div>
+                                <span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $req->payment_status)) }}</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <div class="ms-panel ms-chat-conversations ms-widget">
                 <div class="ms-panel-header">
                     <div class="ms-chat-header justify-content-between">
@@ -184,6 +285,36 @@
                                     <li><h6>Pronouns</h6><p>{{ $r->pronouns ?: '—' }}</p></li>
                                 </ul>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Decline modal --}}
+            @if($active->request && ($active->request->status ?? 'pending') === 'pending')
+                <div class="modal fade" id="declineModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ route('artist.requests.decline', $active) }}">
+                                @csrf
+                                <div class="modal-header">
+                                    <h3 class="modal-title has-icon ms-icon-round">
+                                        <i class="flaticon-cancel bg-danger text-white"></i> Decline Request</h3>
+                                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-muted fs-13">Let the customer know why (optional). This will be sent as a message.</p>
+                                    <div class="form-group mb-0">
+                                        <label class="small">Reason</label>
+                                        <textarea name="reason" class="form-control" rows="3"
+                                            placeholder="e.g. Fully booked for the next few months."></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Decline Request</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

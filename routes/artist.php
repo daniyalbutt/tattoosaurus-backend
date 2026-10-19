@@ -5,6 +5,7 @@ use App\Http\Controllers\Artist\DashboardController;
 use App\Http\Controllers\Artist\ProfileController;
 use App\Http\Controllers\Artist\AvailabilityController;
 use App\Http\Controllers\Artist\RequestController;
+use App\Http\Controllers\Artist\StripeConnectController;
 
 Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -35,4 +36,17 @@ Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('requests',                    [RequestController::class, 'index'])->name('requests');
     Route::get('requests/{conversation}',     [RequestController::class, 'show'])->name('requests.show');
     Route::post('requests/{conversation}',    [RequestController::class, 'sendMessage'])->name('requests.message');
+
+    Route::get('payouts',          [StripeConnectController::class, 'index'])->name('payouts');
+    Route::post('payouts/connect', [StripeConnectController::class, 'connect'])->name('payouts.connect');
+    Route::get('payouts/return',   [StripeConnectController::class, 'return'])->name('payouts.return');
+    Route::get('payouts/refresh',  [StripeConnectController::class, 'refresh'])->name('payouts.refresh');
+
+    Route::post('requests/{conversation}/pricing', [RequestController::class, 'setPricing'])->name('requests.pricing');
+
+    Route::post('requests/{conversation}/approve', [RequestController::class, 'approve'])->name('requests.approve');
+    Route::post('requests/{conversation}/decline', [RequestController::class, 'decline'])->name('requests.decline');
+    
+    Route::get('approved-requests', [RequestController::class, 'approved'])->name('requests.approved');
+    Route::get('request-detail/{tattooRequest}', [DashboardController::class, 'requestDetail'])->name('request.detail');
 });

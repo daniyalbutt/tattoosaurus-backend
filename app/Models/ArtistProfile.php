@@ -14,7 +14,8 @@ class ArtistProfile extends Model
     protected $fillable = [
         'user_id','country_id','state_id','city_id','bio','avatar','portfolio_images',
         'social_links','availability','response_time','hourly_rate','faqs','styles',
-        'is_top', 'is_featured', 'shop_name', 'flash_images', 'featured_source', 'featured_portfolio_index', 'slug'
+        'is_top', 'is_featured', 'shop_name', 'flash_images', 'featured_source', 'featured_portfolio_index', 'slug',
+        'stripe_account_id', 'stripe_onboarded',
     ];
 
     protected $casts = [
@@ -26,7 +27,8 @@ class ArtistProfile extends Model
         'is_featured' => 'boolean',
         'flash_images' => 'array',
         'availability' => 'array', 
-        'styles' => 'array'
+        'styles' => 'array',
+        'stripe_onboarded' => 'boolean',
     ];
 
     public function user()    { return $this->belongsTo(User::class); }

@@ -47,7 +47,9 @@
     <!-- Overlays -->
     <div class="ms-aside-overlay ms-overlay-left ms-toggler" data-target="#ms-side-nav" data-toggle="slideLeft"></div>
     <div class="ms-aside-overlay ms-overlay-right">
-        <a href="javascript:;"><img src="{{ asset('portal/img/circle-left.png') }}" alt=""></a>
+        <a href="javascript:;">
+            <img src="{{ asset('portal/img/circle-left.png') }}" alt="">
+        </a>
     </div>
     <div id="notifBackdrop" class="notif-backdrop"></div>
     <!-- Sidebar Navigation Left -->
@@ -101,8 +103,18 @@
                 </ul>
             </li>
             <li class="menu-item">
-                <a href="{{ route('artist.requests') }}" class="{{ request()->routeIs('artist.requests*') ? 'active' : '' }}">
+                <a href="{{ route('artist.requests') }}" class="{{ (request()->routeIs('artist.requests') || request()->routeIs('artist.requests.show')) && !request()->routeIs('artist.requests.approved') ? 'active' : '' }}">
                     <span><img src="{{ asset('portal/img/box.png') }}" alt="">Request Received</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('artist.requests.approved') }}" class="{{ request()->routeIs('artist.requests.approved') ? 'active' : '' }}">
+                    <span><i class="material-icons fs-16">task_alt</i> Approved Requests</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('artist.payouts') }}" class="{{ request()->routeIs('artist.payouts*') ? 'active' : '' }}">
+                    <span><img src="{{ asset('portal/img/box.png') }}" alt="">Payouts (Stripe)</span>
                 </a>
             </li>
         </ul>
@@ -321,110 +333,23 @@
     </aside>
 
     <aside id="ms-recent-activity" class="side-nav fixed ms-aside-right ms-scrollable">
+        <a href="javascript:;" class="ms-close-activity">
+            <img src="{{ asset('portal/img/circle-left.png') }}" alt="">
+        </a>
         <div class="ms-aside-body">
             <div class="booking-details">
-                <div class="booking-information">
-                    <h3>Booked</h3>
-                    <h3><a href="javascript:;" class="cancel-booking">Cancel Booking</a></h3>
+                <div id="rd-detail-body">
+                    <div class="rd-loading">Select a request to see details.</div>
                 </div>
-                <div class="booking-images">
-                    <img src="{{ asset('portal/img/booking-img-1.png') }}" alt="">
-                    <img src="{{ asset('portal/img/booking-img-1.png') }}" alt="">
-                    <img src="{{ asset('portal/img/booking-img-1.png') }}" alt="">
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Type</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Color</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Size</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Tattoo Style</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-box">
-                    <h6>Additional Notes</h6>
-                    <p>Lorem Ipsum is simply dummy text of the printing.Lorem Ipsum is simply dummy text of the printing.Lorem Ipsum is simply dummy text of the printing.Lorem Ipsum is simply dummy text of the printing.</p>
-                </div>
-                <div class="booking-timing">
-                    <ul>
-                        <li>
-                            <h6>Time</h6>
-                            <p>Monday (9am to 12 pm )</p>
-                        </li>
-                        <li>
-                            <h6>Hours</h6>
-                            <p>1- 2</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="booking-cancel">
-                <a href="javascript:;" class="back-to-details"><img src="{{ asset('portal/img/circle-left.png') }}" alt=""></a>
-                <div class="booking-information">
-                    <h3>Cancel Reason</h3>
-                </div>
-                <p>Select a reason for cancelling this booking.</p>
-                <form action="">
-                    <div class="form-group">
-                        <label for="">Select Reason</label>
-                        <select class="form-control" id="exampleSelect">
-                            <option value="" disabled selected>Select a reason</option>
-
-                            <optgroup label="Client Reasons">
-                                <option value="change_of_mind">Change of mind</option>
-                                <option value="scheduling_conflict">Scheduling conflict</option>
-                                <option value="found_another_artist">Found another artist</option>
-                                <option value="budget_constraints">Budget constraints</option>
-                                <option value="design_not_finalized">Design not finalized</option>
-                                <option value="need_more_time">Need more time to decide</option>
-                                <option value="personal_reasons">Personal reasons</option>
-                                <option value="health_related_concern">Health-related concern</option>
-                                <option value="travel_issues">Travel issues</option>
-                            </optgroup>
-
-                            <optgroup label="Artist / Studio Reasons">
-                                <option value="artist_unavailable">Artist unavailable</option>
-                                <option value="design_revisions_needed">Design revisions needed</option>
-                                <option value="equipment_or_studio_issue">Equipment or studio issue</option>
-                                <option value="rescheduled_by_artist">Rescheduled by artist</option>
-                            </optgroup>
-
-                            <optgroup label="Booking / System">
-                                <option value="incorrect_booking_details">Incorrect booking details</option>
-                                <option value="duplicate_booking">Duplicate booking</option>
-                                <option value="payment_issue">Payment issue</option>
-                            </optgroup>
-
-                            <optgroup label="General">
-                                <option value="emergency_situation">Emergency situation</option>
-                                <option value="weather_or_transportation_issue">Weather or transportation issue</option>
-                                <option value="no_longer_needed">No longer needed</option>
-                                <option value="other">Other</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Description</label>
-                        <textarea name="" id="" class="form-control"></textarea>
-                    </div>
-                    <button class="btn btn-black">Submit</button>
-                </form>
             </div>
         </div>
-        <div class="booking-designer">
+        <div class="booking-designer" id="rd-designer" style="display:none;">
             <div class="designer-info">
-                <img src="{{ asset('portal/img/design-user-img.png') }}" alt="">
-                <h2>Ink by Nova <span>@inkbynova</span></h2>
+                <img id="rd-designer-img" src="{{ asset('portal/img/design-user-img.png') }}" alt="">
+                <h2 id="rd-designer-name">Customer</h2>
             </div>
             <div class="designer-msg">
-                <a href="chat.php">
+                <a href="#" id="rd-designer-chat">
                     <img src="{{ asset('portal/img/message-text.png') }}" alt="">
                 </a>
             </div>
@@ -449,5 +374,34 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
     <script src="{{ asset('portal/js/settings.js') }}"></script>
     @stack('scripts')
+    <script>
+        $(function () {
+            // clear active on ALL sidebar links (top-level + dropdown sub-items)
+            $('.ms-main-aside a').removeClass('active');
+            var $items = $('.ms-main-aside a');
+
+            @php
+                $activeHref = null;
+                if (request()->routeIs('artist.dashboard'))                                      $activeHref = route('artist.dashboard');
+                elseif (request()->routeIs('artist.profile.*'))                                  $activeHref = route('artist.profile.edit');
+                elseif (request()->routeIs('artist.availability.*'))                             $activeHref = route('artist.availability.edit');
+                elseif (request()->routeIs('artist.faqs.*') || request()->routeIs('artist.pricing.*')) $activeHref = route('artist.faqs.edit');
+                elseif (request()->routeIs('artist.requests.approved'))                          $activeHref = route('artist.requests.approved');
+                elseif (request()->routeIs('artist.requests') || request()->routeIs('artist.requests.show')) $activeHref = route('artist.requests');
+                elseif (request()->routeIs('artist.payouts') || request()->routeIs('artist.payouts.*'))   $activeHref = route('artist.payouts');
+            @endphp
+
+            @if($activeHref)
+                $items.filter('[href="{{ $activeHref }}"]').addClass('active');
+            @endif
+
+            // Portfolio dropdown sub-items
+            @if(request()->routeIs('artist.portfolio.*'))
+                $('a[href="{{ route('artist.portfolio.edit') }}"]').addClass('active');
+            @elseif(request()->routeIs('artist.flash.*'))
+                $('a[href="{{ route('artist.flash.edit') }}"]').addClass('active');
+            @endif
+        });
+    </script>
 </body>
 </html>
