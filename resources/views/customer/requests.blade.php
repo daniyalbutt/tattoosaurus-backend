@@ -79,9 +79,14 @@
                     $platformFee = config('services.stripe.platform_fee', 10);
                 @endphp
                 @if($req->tattoo_price)
+                    @php
+                        $ps = $req->payment_status;
+                        $depositTotal = $req->deposit_amount + $platformFee;
+                    @endphp
                     <div class="ms-panel mb-3">
                         <div class="ms-panel-body">
                             <h5 class="mb-3">Payment</h5>
+
                             <table class="table table-sm table-borderless mb-3">
                                 <tbody>
                                     <tr>
@@ -89,7 +94,12 @@
                                         <td class="text-right">${{ number_format($req->tattoo_price, 2) }}</td>
                                     </tr>
                                     <tr>
-                                        <td class="pl-0"><strong>Deposit</strong></td>
+                                        <td class="pl-0">
+                                            <strong>Deposit</strong>
+                                            @if(in_array($ps, ['booking_confirmed','balance_pending','fully_paid']))
+                                                <span class="badge badge-success ml-1">Paid</span>
+                                            @endif
+                                        </td>
                                         <td class="text-right">${{ number_format($req->deposit_amount, 2) }}</td>
                                     </tr>
                                     <tr>
@@ -97,30 +107,66 @@
                                         <td class="text-right">${{ number_format($platformFee, 2) }}</td>
                                     </tr>
                                     <tr class="border-top">
-                                        <td class="pl-0"><strong>Remaining Balance</strong></td>
+                                        <td class="pl-0">
+                                            <strong>Remaining Balance</strong>
+                                            @if($ps === 'fully_paid')
+                                                <span class="badge badge-success ml-1">Paid</span>
+                                            @endif
+                                        </td>
                                         <td class="text-right"><strong>${{ number_format($req->remaining_balance, 2) }}</strong></td>
                                     </tr>
                                 </tbody>
                             </table>
 
-                            @if($req->payment_status === 'deposit_pending')
+                            @if($ps === 'deposit_pending')
                                 <form method="POST" action="{{ route('customer.requests.pay-deposit', $active) }}">
                                     @csrf
-                                    <button class="btn btn-black w-auto">
-                                        Pay Deposit — ${{ number_format($req->deposit_amount + $platformFee, 2) }}
+                                    <button class="btn btn-black w-100">
+                                        Pay Deposit — ${{ number_format($depositTotal, 2) }}
                                     </button>
                                 </form>
-                            @elseif($req->payment_status === 'payment_failed')
+                                <small class="text-muted d-block mt-2">
+                                    Deposit ${{ number_format($req->deposit_amount, 2) }} + ${{ number_format($platformFee, 2) }} platform fee.
+                                </small>
+
+                            @elseif($ps === 'payment_failed')
                                 <div class="alert alert-danger mb-2">Your last payment failed. Please try again.</div>
                                 <form method="POST" action="{{ route('customer.requests.pay-deposit', $active) }}">
                                     @csrf
-                                    <button class="btn btn-black w-auto">
-                                        Retry Deposit — ${{ number_format($req->deposit_amount + $platformFee, 2) }}
+                                    <button class="btn btn-black w-100">
+                                        Retry Deposit — ${{ number_format($depositTotal, 2) }}
                                     </button>
                                 </form>
+
+                            @elseif($ps === 'booking_confirmed')
+                                <div class="alert alert-success mb-0">
+                                    <i class="material-icons align-middle mr-1" style="font-size:16px;">check_circle</i>
+                                    Booking confirmed. The remaining balance will be requested after your session.
+                                </div>
+
+                            @elseif($ps === 'balance_pending')
+                                <div class="alert alert-info mb-2">
+                                    Your tattoo is complete — the remaining balance is now due.
+                                </div>
+                                <form method="POST" action="{{ route('customer.requests.pay-balance', $active) }}">
+                                    @csrf
+                                    <button class="btn btn-black w-100">
+                                        Pay Balance — ${{ number_format($req->remaining_balance, 2) }}
+                                    </button>
+                                </form>
+
+                            @elseif($ps === 'fully_paid')
+                                <div class="alert alert-success mb-0">
+                                    <i class="material-icons align-middle mr-1" style="font-size:16px;">verified</i>
+                                    Paid in full. Thank you!
+                                </div>
+
+                            @elseif($ps === 'refunded')
+                                <span class="badge badge-dark" style="font-size:13px;">Refunded</span>
+
                             @else
-                                <span class="badge bg-success" style="font-size:13px;">
-                                    {{ ucfirst(str_replace('_', ' ', $req->payment_status)) }}
+                                <span class="badge badge-info" style="font-size:13px;">
+                                    {{ ucfirst(str_replace('_', ' ', $ps)) }}
                                 </span>
                             @endif
                         </div>

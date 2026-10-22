@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/artist/{artist}/report', [ReportController::class, 'store'])->middleware(['auth'])->name('artist.report');
 
     Route::post('requests/{conversation}/pay-deposit', [PaymentController::class, 'payDeposit'])->name('requests.pay-deposit');
+    Route::post('requests/{conversation}/pay-balance', [PaymentController::class, 'payBalance'])->name('requests.pay-balance');
     Route::get('payment/success', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('payment/cancel',  [PaymentController::class, 'cancel'])->name('payment.cancel');
 

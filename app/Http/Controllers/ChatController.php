@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Notifications\GeneralNotification;
 
 class ChatController extends Controller
 {
@@ -49,6 +51,9 @@ class ChatController extends Controller
 
         $conversation->touch();
 
+        // notify the OTHER party in the conversation
+        $this->notifyRecipient($conversation, $msg);
+
         return response()->json($this->formatMessage($msg));
     }
 
@@ -64,6 +69,30 @@ class ChatController extends Controller
             ->map(fn ($m) => $this->formatMessage($m));
 
         return response()->json(['messages' => $messages]);
+    }
+
+    private function notifyRecipient(Conversation $conversation, Message $msg): void
+    {
+        // recipient = whoever isn't the sender
+        $isArtistSender = auth()->id() === $conversation->artist_id;
+        $recipient = $isArtistSender ? $conversation->customer : $conversation->artist;
+        if (! $recipient) return;
+
+        // where the recipient opens this conversation
+        $url = $isArtistSender
+            ? route('customer.requests.show', $conversation)   // customer receives
+            : route('artist.requests.show', $conversation);    // artist receives
+
+        $preview = $msg->body
+            ? Str::limit($msg->body, 40)
+            : '📎 Attachment';
+
+        $recipient->notify(new GeneralNotification(
+            title: 'New message',
+            body:  auth()->user()->name . ': ' . $preview,
+            url:   $url,
+            icon:  'chat',
+        ));
     }
 
     private function formatMessage(Message $m): array

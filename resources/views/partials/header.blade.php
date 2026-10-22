@@ -28,15 +28,11 @@
                                     <img src="{{ asset('img/toggle-button.png') }}" alt="">
                                 </a>
                                 <div class="dropdown">
-                                    <a href="#" class="user-button dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        @auth
+                                    @auth
+                                        <a href="#" class="user-button dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <img src="{{ auth()->user()->avatar_url }}" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
-                                        @else
-                                            <img src="{{ asset('img/user-button.png') }}" alt="">
-                                        @endauth
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                        @auth
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                             @php
                                                 $portalUrl = auth()->user()->hasRole('artist')
                                                     ? route('artist.dashboard')
@@ -51,10 +47,13 @@
                                                     <button class="dropdown-item" type="submit">LOGOUT</button>
                                                 </form>
                                             </li>
-                                        @else
-                                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</a></li>
-                                        @endauth
-                                    </ul>
+                                        </ul>
+                                    @else
+                                        {{-- guest: icon opens the login modal directly, no dropdown --}}
+                                        <a href="#" class="user-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                            <img src="{{ asset('img/user-button.png') }}" alt="">
+                                        </a>
+                                    @endauth
                                 </div>
                             </div>
                         </div>

@@ -28,7 +28,7 @@
             $depositPaid = $req->payments->firstWhere(fn ($p) => $p->type === 'deposit' && $p->status === 'paid');
             $balancePaid = $req->payments->firstWhere(fn ($p) => $p->type === 'balance' && $p->status === 'paid');
         @endphp
-        <div class="col-xl-4 col-md-12">
+        <div class="col-xl-6 col-md-12">
             <div class="ms-panel">
                 <div class="ms-panel-body">
 
@@ -78,7 +78,7 @@
                                     <td class="pl-0">
                                         <strong>Remaining Balance</strong>
                                         @if($balancePaid)
-                                            <span class="badge bg-success ml-1">Paid</span>
+                                            <span class="badge badge-success ml-1">Paid</span>
                                         @endif
                                     </td>
                                     <td class="text-right"><strong>${{ number_format($req->remaining_balance, 2) }}</strong></td>

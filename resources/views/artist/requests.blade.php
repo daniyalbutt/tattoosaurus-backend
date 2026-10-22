@@ -49,7 +49,7 @@
                                                 <h6>{{ $conv->customer->name }}</h6>
                                                 <span class="ms-chat-time">{{ $conv->updated_at->diffForHumans() }}</span>
                                                 <p class="mb-1">{{ $preview }}</p>
-                                                <span class="badge bg-{{ $statusColor }}" style="color: white;font-weight: 200;padding: 6px 8px;font-size: 11px;">{{ $statusLabel }}</span>
+                                                <span class="badge badge-{{ $statusColor }}">{{ $statusLabel }}</span>
                                             </div>
                                         </li>
                                     @empty
@@ -108,7 +108,7 @@
                 @elseif($status === 'declined')
                     <div class="ms-panel mb-3">
                         <div class="ms-panel-body">
-                            <span class="badge bg-danger mb-2">Declined</span>
+                            <span class="badge badge-danger mb-2">Declined</span>
                             <p class="text-muted mb-0 fs-13">You declined this request.</p>
                         </div>
                     </div>
@@ -149,14 +149,35 @@
                                 </small>
                             </form>
                         @else
-                            <div class="d-flex justify-content-between align-items-start">
+                            @php $ps = $req->payment_status; @endphp
+                            <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
                                     <p class="mb-1"><strong>Tattoo Price:</strong> ${{ number_format($req->tattoo_price, 2) }}</p>
                                     <p class="mb-1"><strong>Deposit:</strong> ${{ number_format($req->deposit_amount, 2) }}</p>
                                     <p class="mb-0"><strong>Remaining:</strong> ${{ number_format($req->remaining_balance, 2) }}</p>
                                 </div>
-                                <span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $req->payment_status)) }}</span>
+                                <span class="badge badge-info">{{ ucfirst(str_replace('_', ' ', $ps)) }}</span>
                             </div>
+
+                            @if($ps === 'booking_confirmed')
+                                <form method="POST" action="{{ route('artist.requests.request-balance', $active) }}" class="mt-2">
+                                    @csrf
+                                    <button class="btn btn-black btn-sm">
+                                        <i class="material-icons align-middle mr-1" style="font-size:16px;">request_quote</i>
+                                        Request Balance — ${{ number_format($req->remaining_balance, 2) }}
+                                    </button>
+                                </form>
+                                <small class="text-muted d-block mt-1">Click once the tattoo session is complete.</small>
+                            @elseif($ps === 'balance_pending')
+                                <div class="alert alert-info mb-0 mt-2 py-2 fs-13">
+                                    Balance requested — waiting for the customer to pay.
+                                </div>
+                            @elseif($ps === 'fully_paid')
+                                <div class="alert alert-success mb-0 mt-2 py-2 fs-13">
+                                    <i class="material-icons align-middle mr-1" style="font-size:16px;">verified</i>
+                                    Paid in full.
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>

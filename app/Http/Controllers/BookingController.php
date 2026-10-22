@@ -8,6 +8,7 @@ use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Mail\NewTattooRequest;
 use Illuminate\Support\Facades\Mail;
+use App\Notifications\GeneralNotification;
 
 class BookingController extends Controller
 {
@@ -66,9 +67,18 @@ class BookingController extends Controller
             'tattoo_request_id'=> $tattooRequest->id,
         ]);
 
+        // email the artist
         Mail::to($artist->email)->send(
             new NewTattooRequest($artist, auth()->user(), $tattooRequest)
         );
+
+        // in-app notification to the artist
+        $artist->notify(new GeneralNotification(
+            title: 'New tattoo request',
+            body:  auth()->user()->name . ' sent you a tattoo request.',
+            url:   route('artist.requests.show', $conversation),
+            icon:  'inbox',
+        ));
 
         // redirect to this specific conversation
         return redirect()->route('customer.requests.show', $conversation);

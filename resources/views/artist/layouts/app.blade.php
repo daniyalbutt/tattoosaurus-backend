@@ -108,6 +108,17 @@
                 </a>
             </li>
             <li class="menu-item">
+                <a href="{{ route('artist.notifications') }}" class="{{ request()->routeIs('artist.notifications') ? 'active' : '' }}">
+                    <span>
+                        <img src="{{ asset('portal/img/box.png') }}" alt=""> Notifications
+                        @php $navUnread = auth()->user()->unreadNotifications->count(); @endphp
+                        @if($navUnread > 0)
+                            <span class="badge badge-danger ml-1">{{ $navUnread > 9 ? '9+' : $navUnread }}</span>
+                        @endif
+                    </span>
+                </a>
+            </li>
+            <li class="menu-item">
                 <a href="{{ route('artist.requests.approved') }}" class="{{ request()->routeIs('artist.requests.approved') ? 'active' : '' }}">
                     <span><i class="material-icons fs-16">task_alt</i> Approved Requests</span>
                 </a>
@@ -122,28 +133,49 @@
     <div id="notificationSidebar" class="notification-sidebar">
         <div class="sidebar-header">
             <h5>Notifications</h5>
-            <button id="closeNotifications">
-                <i class="fa fa-times"></i>
-            </button>
+            <div class="d-flex align-items-center" style="gap:.75rem;">
+                @if(auth()->user()->unreadNotifications->count() > 0)
+                    <form method="POST" action="{{ route('artist.notifications.readAll') }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn mt-0 btn-sm btn-info" style="text-decoration:none;">Mark all read</button>
+                    </form>
+                @endif
+                <button id="closeNotifications">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
         </div>
         <div class="sidebar-content">
             <ul>
-                <li>
-                    <img src="{{ asset('portal/img/user-chat.png') }}" alt="">
-                    <div class="notification-content">
-                        <span>05 : 30</span>
-                        <h6>Artist Approved Request</h6>
-                        <p>Checkout available slot</p>
-                    </div>
-                </li>
-                <li>
-                    <img src="{{ asset('portal/img/user-chat.png') }}" alt="">
-                    <div class="notification-content">
-                        <span>05 : 30</span>
-                        <h6>Artist Approved Request</h6>
-                        <p>Checkout available slot</p>
-                    </div>
-                </li>
+                @forelse(auth()->user()->notifications()->latest()->take(20)->get() as $n)
+                    @php
+                        $d = $n->data;
+                        $isUnread = is_null($n->read_at);
+                    @endphp
+                    <li class="{{ $isUnread ? 'notif-unread' : '' }}">
+                        <form method="POST" action="{{ route('artist.notifications.read', $n->id) }}" class="notif-item-form">
+                            @csrf
+                            <button type="submit" class="notif-item-btn">
+                                <span class="notif-icon">
+                                    @if(!empty($d['image']))
+                                        <img src="{{ $d['image'] }}" alt="">
+                                    @else
+                                        <i class="material-icons">{{ $d['icon'] ?? 'notifications' }}</i>
+                                    @endif
+                                </span>
+                                <div class="notification-content">
+                                    <span>{{ $n->created_at->diffForHumans() }}</span>
+                                    <h6>{{ $d['title'] ?? 'Notification' }}</h6>
+                                    @if(!empty($d['body']))<p>{{ $d['body'] }}</p>@endif
+                                </div>
+                            </button>
+                        </form>
+                    </li>
+                @empty
+                    <li class="text-center text-muted py-4" style="display:block;">
+                        <p class="mb-0">No notifications yet.</p>
+                    </li>
+                @endforelse
             </ul>
         </div>
     </div>
@@ -162,9 +194,13 @@
                         <i class="flaticon-chat"></i>
                     </a>
                 </li>
-                <li class="ms-nav-item dropdown">
-                    <a href="#" class="text-disabled ms-has-notification" id="notificationDropdown">
+                @php $unreadCount = auth()->user()->unreadNotifications->count(); @endphp
+                <li class="ms-nav-item">
+                    <a href="#" class="text-disabled ms-has-notification position-relative" id="notificationDropdown">
                         <i class="flaticon-bell"></i>
+                        @if($unreadCount > 0)
+                            <span class="notif-badge">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                        @endif
                     </a>
                 </li>
                 <li class="ms-nav-item ms-nav-user dropdown">
@@ -333,9 +369,8 @@
     </aside>
 
     <aside id="ms-recent-activity" class="side-nav fixed ms-aside-right ms-scrollable">
-        <a href="javascript:;" class="ms-close-activity">
-            <img src="{{ asset('portal/img/circle-left.png') }}" alt="">
-        </a>
+        <a href="javascript:;" class="ms-close-activity"
+           style="position:absolute;top:14px;right:16px;z-index:5;color:#2C2B2B;font-size:22px;line-height:1;cursor:pointer;">&times;</a>
         <div class="ms-aside-body">
             <div class="booking-details">
                 <div id="rd-detail-body">
@@ -401,6 +436,22 @@
             @elseif(request()->routeIs('artist.flash.*'))
                 $('a[href="{{ route('artist.flash.edit') }}"]').addClass('active');
             @endif
+        });
+
+        // Notification sidebar open/close (safe even if settings.js also binds)
+        $(function () {
+            const $sidebar  = $('#notificationSidebar');
+            const $backdrop = $('#notifBackdrop');
+
+            $('#notificationDropdown').on('click', function (e) {
+                e.preventDefault();
+                $sidebar.addClass('open');
+                $backdrop.addClass('show');
+            });
+            $('#closeNotifications, #notifBackdrop').on('click', function () {
+                $sidebar.removeClass('open');
+                $backdrop.removeClass('show');
+            });
         });
     </script>
 </body>

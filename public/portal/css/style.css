@@ -670,7 +670,7 @@ pre{
 .ms-has-notification{
   position: relative;
 }
-.ms-has-notification::after{
+/* .ms-has-notification::after{
   content: '';
   position: absolute;
   top: -6px;
@@ -680,7 +680,7 @@ pre{
   width: 10px;
   height: 10px;
   background: #ec4e20;
-}
+} */
 .ps {
   overflow: hidden !important;
   overflow-anchor: none;
@@ -2992,6 +2992,7 @@ input:checked + .ms-switch-slider.ms-switch-dark{
   color: #fff;
   background-color: #f9423c;
   border-color: #f9423c;
+  border-radius: 50px;
 }
 .btn-danger:hover,
 .btn-danger:focus,
@@ -3034,6 +3035,7 @@ input:checked + .ms-switch-slider.ms-switch-dark{
   color: #fff;
   background-color: #878793;
   border-color: #878793;
+  border-radius: 50px;
 }
 .btn-light:hover,
 .btn-light:focus,
@@ -7197,13 +7199,13 @@ ul.customer-support li a:hover img {
     left: -320px; /* width of your panel */
     top: 0;
     height: 100%;
-    width: 320px;
+    width: 350px;
     background: #fff;
     z-index: 1;
     overflow-y: auto;
     box-shadow: 4px 0 12px rgba(0,0,0,0.15);
     transition: left 0.35s ease; /* Slide in/out */
-    padding: 30px;
+    padding: 25px 25px;
 }
 
 .notification-sidebar.open {
@@ -7236,7 +7238,7 @@ ul.customer-support li a:hover img {
 
 .sidebar-header h5 {
     color: #2C2B2B;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 600;
     margin: 0;
 }
@@ -7271,10 +7273,12 @@ button#closeNotifications i {
 
 .notification-content p {
     color: #00000080;
+    font-size: 13px;
+    margin: 0;
 }
 
 .sidebar-content {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .brief-sent {
@@ -7426,3 +7430,37 @@ div#rd-images {
     margin: 0;
     line-height: normal;
 }
+
+.notif-badge {
+    position: absolute; top: -4px; right: -6px;
+    background: #e74c3c; color: #fff;
+    font-size: 10px; line-height: 1;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    border-radius: 8px; display: inline-flex;
+    align-items: center; justify-content: center; font-weight: 600;
+}
+#notificationSidebar .sidebar-content ul li.notif-unread { background: #f5f3ff; }
+.notif-item-form { margin: 0; }
+.notif-item-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 12px 12px;
+    text-align: left;
+    cursor: pointer;
+}
+.notif-item-btn:hover { background: #f7f7fb; }
+.notif-icon {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+    background: #efeefe; display: inline-flex; align-items: center; justify-content: center;
+    overflow: hidden;
+}
+.notif-icon img { width: 100%; height: 100%; object-fit: cover; }
+.notif-icon .material-icons { font-size: 20px; color: #6a5acd; }
+
+/* Fallback slide behaviour (harmless if style.css already handles it) */
+#notificationSidebar.open { transform: translateX(0) !important; right: 0; }
+#notifBackdrop.show { opacity: 1; visibility: visible; }

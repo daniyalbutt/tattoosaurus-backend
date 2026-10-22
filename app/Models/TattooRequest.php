@@ -34,13 +34,13 @@ class TattooRequest extends Model
 
     public function getStatusLabelAttribute(): array
     {
-        // declined short-circuits everything
         if (($this->status ?? 'pending') === 'declined') {
             return ['Declined', 'danger'];
         }
 
         return match ($this->payment_status) {
             'fully_paid'        => ['Completed', 'success'],
+            'balance_pending'   => ['Balance Due', 'warning'],
             'booking_confirmed' => ['Deposit Paid', 'primary'],
             'payment_failed'    => ['Payment Failed', 'danger'],
             'refunded'          => ['Refunded', 'dark'],

@@ -6,6 +6,7 @@ use App\Http\Controllers\Artist\ProfileController;
 use App\Http\Controllers\Artist\AvailabilityController;
 use App\Http\Controllers\Artist\RequestController;
 use App\Http\Controllers\Artist\StripeConnectController;
+use App\Http\Controllers\NotificationController;
 
 Route::middleware(['auth', 'role:artist'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -46,7 +47,18 @@ Route::middleware(['auth', 'role:artist'])->group(function () {
 
     Route::post('requests/{conversation}/approve', [RequestController::class, 'approve'])->name('requests.approve');
     Route::post('requests/{conversation}/decline', [RequestController::class, 'decline'])->name('requests.decline');
+
+    Route::post('requests/{conversation}/request-balance', [RequestController::class, 'requestBalance'])->name('requests.request-balance');
     
     Route::get('approved-requests', [RequestController::class, 'approved'])->name('requests.approved');
     Route::get('request-detail/{tattooRequest}', [DashboardController::class, 'requestDetail'])->name('request.detail');
+
+    Route::post('notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('notifications/read-all',  [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+
+    Route::get('notifications',               [NotificationController::class, 'index'])->name('notifications');
+    Route::post('notifications/{id}/read',    [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('notifications/read-all',     [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+    Route::delete('notifications/{id}',       [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
 });

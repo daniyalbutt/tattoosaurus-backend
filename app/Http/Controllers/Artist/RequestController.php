@@ -6,6 +6,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use App\Models\TattooRequest;
+use App\Notifications\GeneralNotification;
 
 
 class RequestController extends Controller
@@ -57,6 +58,14 @@ class RequestController extends Controller
             'body'            => $data['body'],
         ]);
 
+        // notify the customer of the new message
+        $conversation->customer->notify(new GeneralNotification(
+            title: 'New message',
+            body:  auth()->user()->name . ': ' . \Illuminate\Support\Str::limit($data['body'], 40),
+            url:   route('customer.requests.show', $conversation),
+            icon:  'chat',
+        ));
+
         return back();
     }
 
@@ -85,6 +94,15 @@ class RequestController extends Controller
                 . ' deposit to confirm your booking. You can pay the deposit from the panel above.',
         ]);
 
+        // notify the customer: deposit is now payable
+        $conversation->customer->notify(new GeneralNotification(
+            title: 'Deposit requested',
+            body:  'Pay a $' . number_format($data['deposit_amount'], 2)
+                    . ' deposit to confirm your booking.',
+            url:   route('customer.requests.show', $conversation),
+            icon:  'payments',
+        ));
+
         return back()->with('success', 'Pricing set and shared with the customer.');
     }
 
@@ -106,8 +124,13 @@ class RequestController extends Controller
             'body'      => 'Your request has been approved. I\'ll set the pricing shortly.',
         ]);
 
-        // Optional: notify the customer by email
-        // Mail::to($conversation->customer->email)->send(new RequestApproved($req));
+        // notify the customer
+        $conversation->customer->notify(new GeneralNotification(
+            title: 'Request approved',
+            body:  auth()->user()->name . ' approved your tattoo request.',
+            url:   route('customer.requests.show', $conversation),
+            icon:  'check_circle',
+        ));
 
         return back()->with('success', 'Request approved. You can now set the pricing.');
     }
@@ -129,6 +152,16 @@ class RequestController extends Controller
                 : 'Unfortunately I\'m unable to take this request at this time.',
         ]);
 
+        // notify the customer
+        $conversation->customer->notify(new GeneralNotification(
+            title: 'Request declined',
+            body:  $reason !== ''
+                    ? 'Your request was declined: ' . \Illuminate\Support\Str::limit($reason, 50)
+                    : 'Your request was declined.',
+            url:   route('customer.requests.show', $conversation),
+            icon:  'cancel',
+        ));
+
         return back()->with('success', 'Request declined.');
     }
 
@@ -142,5 +175,35 @@ class RequestController extends Controller
             ->get();
 
         return view('artist.approved-requests', compact('requests'));
+    }
+
+    public function requestBalance(Conversation $conversation)
+    {
+        abort_unless($conversation->artist_id === auth()->id(), 403);
+
+        $req = $conversation->request;
+        abort_unless($req, 404);
+        abort_unless($req->payment_status === 'booking_confirmed', 403,
+            'Balance can only be requested after the deposit is paid.');
+
+        $req->update(['payment_status' => 'balance_pending']);
+
+        $conversation->messages()->create([
+            'sender_id' => auth()->id(),   // the artist
+            'body'      => 'Your tattoo is complete. The remaining balance of $'
+                . number_format($req->remaining_balance, 2)
+                . ' is now due — you can pay it from the panel above.',
+        ]);
+
+        // notify the customer: balance is now payable
+        $conversation->customer->notify(new GeneralNotification(
+            title: 'Balance due',
+            body:  'Your remaining balance of $' . number_format($req->remaining_balance, 2)
+                    . ' is now payable.',
+            url:   route('customer.requests.show', $conversation),
+            icon:  'request_quote',
+        ));
+
+        return back()->with('success', 'Balance requested. The customer has been notified.');
     }
 }

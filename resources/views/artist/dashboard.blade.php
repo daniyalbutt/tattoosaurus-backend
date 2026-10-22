@@ -193,32 +193,16 @@
     #ms-recent-activity {
         position: fixed;
         top: 0; right: 0; bottom: 0;
-        transform: translateX(110%);
+        transform: translateX(100%);
         transition: transform .3s ease;
         will-change: transform;
         z-index: 1030;
-        overflow: visible !important;
     }
-
-    .ms-close-activity{
-        position: absolute;
-        top: 14px;
-        left: -21px;
-        z-index: 999999999;
-        color: #2C2B2B;
-        font-size: 22px;
-        line-height: 1;
-        cursor: pointer;
-        background-color: black;
-        padding: 5px;
-        border-radius: 50px;
-    }
-
     #ms-recent-activity.is-open { transform: translateX(0); }
 
     #rd-backdrop {
         position: fixed; inset: 0;
-        background: rgb(0 0 0 / 94%);
+        background: rgba(0,0,0,.4);
         opacity: 0; visibility: hidden;
         transition: opacity .3s ease;
         z-index: 1029;   /* just under the panel */
